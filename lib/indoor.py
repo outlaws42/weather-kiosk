@@ -6,7 +6,6 @@ import time
 try:
     import pigpio
     import DHT22
-    print("pigpio, DHT22 import good") # Debug
 except(ImportError) as e:
     print('import error:  ' + str(e)) #debug
     logging.info('import error:  ' + str(e))
@@ -19,8 +18,7 @@ class Indoor():
     sleepTime = 4 # Time wait between indoor tempature readings
       
     def __init__(self):
-        print('This is indoor.py')
-        #self.readDHT22()
+        pass
         
     def readDHT22(self):
         try:
@@ -32,10 +30,8 @@ class Indoor():
             # Get a new reading
             for i in range(2):
                 self.dht22.trigger()
-                logging.info('DHT22 sensor reading ' + str(self.dht22.temperature()))
                 print('DHT22 sensor reading ' + str(self.dht22.temperature()))
                 print('waiting  ' + str(self.sleepTime) + ' Seconds')
-                logging.info('waiting  ' + str(self.sleepTime) + ' Seconds')
                 time.sleep(self.sleepTime)
 
                 

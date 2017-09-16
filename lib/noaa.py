@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-import pyowm
 import os
 import tkinter as tk
 import pywapi

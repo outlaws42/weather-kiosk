@@ -11,12 +11,11 @@ logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
+    zip_code = '46764'
     
     def __init__(self):
-        print('This is weather.com')
-        #self.get_weather_info() #debug
-        #self.gleen_info() # debug
-
+        pass
+        
     def get_resource_path(self,rel_path):
         dir_of_py_file = os.path.dirname(sys.argv[0])
         rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
@@ -24,8 +23,8 @@ class WeatherCh():
         return abs_path_to_resource
         
     def get_weather_info(self):
-        self.weather = pywapi.get_weather_from_weather_com('467', units = 'imperial')
-        #print(self.weather)
+        self.weather = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
+        
     def gleen_info(self):
 
         # weather service 
@@ -33,7 +32,7 @@ class WeatherCh():
 
         try:    # left weather info
             # brief discription of the weather
-            self.status = self.weather['current_conditions']['text']
+            self.status =self.weather['current_conditions']['text']
         except(KeyError) as e:
             print('Status weather error:  ' + str(e)) #debug
             logging.info('Status weather error:  ' + str(e))
@@ -42,7 +41,7 @@ class WeatherCh():
             
         try:
             # outside temp .
-            self.outdoor_temp = round(self.weather['current_conditions']['temperature'])
+            self.outdoor_temp = self.weather['current_conditions']['temperature']
         except(KeyError) as e:
             print('Outdoor temp weather error:  ' + str(e)) #debug
             logging.info('Outdoor temp weather error:  ' + str(e))
@@ -82,7 +81,7 @@ class WeatherCh():
 
         try:
             # dewpoint
-            self.dewpoint = round(self.weather['current_conditions']['dewpoint'])
+            self.dewpoint = self.weather['current_conditions']['dewpoint']
         except(KeyError) as e:
             print('Dewpoint weather error:  ' + str(e)) #debug
             logging.info('Dewpoint weather error:  ' + str(e))
@@ -90,7 +89,7 @@ class WeatherCh():
             pass
         try:    
             # Humidity
-            self.humidity = round(self.weather['current_conditions']['humidity'])
+            self.humidity = self.weather['current_conditions']['humidity']
         except(KeyError) as e:
             print('Humidity weather error:  ' + str(e)) #debug
             logging.info('Humidity check_weather error:  ' + str(e))
@@ -99,7 +98,7 @@ class WeatherCh():
             
         try:
             # Feels Like
-            self.windchill = round(self.weather['current_conditions']['feels_like'])
+            self.windchill = self.weather['current_conditions']['feels_like']
         except(KeyError) as e:
             print('Windchill weather error:  ' + str(e)) #debug
             logging.info('Windchill weather error:  ' + str(e))

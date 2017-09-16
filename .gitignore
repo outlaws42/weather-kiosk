@@ -1,4 +1,5 @@
-__python__/*
-lib/__python__/*
-lib/__python__/
-__python__/
+__pycache__/*
+lib/__pycache__/*
+lib/__pycache__/
+__pycache__/
+*.log
