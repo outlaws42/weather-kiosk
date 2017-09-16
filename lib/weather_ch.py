@@ -11,7 +11,7 @@ logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
-    zip_code = '46764'
+    zip_code = '46725'
     
     def __init__(self):
         pass
