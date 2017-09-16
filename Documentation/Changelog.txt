@@ -1,0 +1,12 @@
+2.0.1
+Intial stable release with seperate files for each outdoor service.
+
+2.0.2 (4/9/2017)
+* Made bigger to fill more of the screen
+* Added info file to save last weather info
+* Added Arrows to outdoor temp, barometer,feels like and relative Humidity
+    to indicate going up,down or staying  the same.
+* Added % chance of precipitation to the forcasts by day name. 
+
+2.0.3 (4/14/2017)
+* Removed UV Added Dewpoint back in.
