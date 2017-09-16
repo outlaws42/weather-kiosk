@@ -50,7 +50,7 @@ import lib.noaa as no
 import lib.weather_ch as wc
 
 class Main():
-    version = '2.0.5'
+    version = '2.0.6'
     software = 'Weather Kiosk' 
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
