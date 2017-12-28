@@ -12,7 +12,7 @@ class Database():
 
         try:
             cursor = conn.cursor()
-            results = cursor.execute("SELECT ID, Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate FROM Weather ")
+            results = cursor.execute("SELECT ID, Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip FROM Weather ")
 
             for row in results:
                 print("ID :", row[0])

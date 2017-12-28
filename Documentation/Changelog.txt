@@ -10,3 +10,6 @@ Intial stable release with seperate files for each outdoor service.
 
 2.0.3 (4/14/2017)
 * Removed UV Added Dewpoint back in.
+
+2.0.7 (12/28/2017)
+* Added database

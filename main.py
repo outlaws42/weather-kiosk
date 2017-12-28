@@ -203,7 +203,8 @@ class Main():
                                                             DewPoint REAL, 
                                                             RelHumidity REAL, 
                                                             Barometer REAL, 
-                                                            TDate
+                                                            TDate,
+                                                            Zip TEXT
                                                     ); """
 
         condition = self.outdoor.status
