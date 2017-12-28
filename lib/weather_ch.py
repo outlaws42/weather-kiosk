@@ -11,7 +11,7 @@ logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
-    zip_code = '46725'
+    zip_code = '46764'
     
     def __init__(self):
         pass
@@ -53,10 +53,13 @@ class WeatherCh():
             # wind
             self.wind_dir = self.weather['current_conditions']['wind']['text']
             if self.wind_dir == 'CALM':
-                self.wind = "0"    
+                self.wind = "0"
+                self.wind_speed = 0
             else:
                 self.wind = self.wind_dir + "  at  " + self.weather['current_conditions']['wind']['speed']
+                self.wind_speed = self.weather['current_conditions']['wind']['speed']
             self.wind_gust =  self.weather['current_conditions']['wind']['gust']
+
             
         except(KeyError) as e:
             print('Wind weather error:  ' + str(e)) #debug
@@ -153,6 +156,7 @@ class WeatherCh():
             self.forcasts_0_sunset = "Sunset ER"
             pass
 
+    def forcast(self):
         try:
             # forcasts
             # day 0

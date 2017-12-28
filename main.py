@@ -34,23 +34,27 @@ Files in main dir: DHT22.py, main.py
 Libraries in lib dir: indoor.py, noaa.py, owm.py weather_ch.py
 """
 
-import tkinter as tk
+import configparser
 import datetime
-import time
+import logging
 import os
 import sys
-import configparser
-import logging
+import time
+import tkinter as tk
+
 logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 # user libraries
 import lib.indoor as indr
-#import lib.owm as ow
-import lib.noaa as no
+# import lib.owm as ow
+# import lib.noaa as no
 import lib.weather_ch as wc
+import lib.db as db
+
+
 
 class Main():
-    version = '2.0.6'
+    version = '2.0.7'
     software = 'Weather Kiosk' 
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -72,16 +76,16 @@ class Main():
 
     
     if refresh_type =='1':
-        refresh_rate =((refresh_rate_amount*60)*1000) #Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
+        refresh_rate =((refresh_rate_amount*60)*1000) # Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
     else:
-        refresh_rate =(refresh_rate_amount*1000) #Seconds Refresh (seconds*1000) 1000 Miliseconds in a second
+        refresh_rate =(refresh_rate_amount*1000) # Seconds Refresh (seconds*1000) 1000 Miliseconds in a second
         
     def __init__(self):
         self.root = tk.Tk()
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        self.root.overrideredirect(1) # Make the window borderless
+        # self.root.overrideredirect(1) # Make the window borderless
         self.frame0 = tk.Frame(self.root,background=self.background)
         self.frame0.grid(column='0',row='0',sticky="ew")
         
@@ -90,6 +94,7 @@ class Main():
         self.outdoor = wc.WeatherCh()
         #self.outdoor = no.Noaa() 
         self.indoor = indr.Indoor()
+        self.database = db.Database()
 
         # Call refresh of data
         self.refresh_info()
@@ -104,15 +109,6 @@ class Main():
         
         self.root.mainloop()
 
-    def check_online(self):
-        self.outdoor.get_weather_info()
-        
-        try:
-            if self.outdoor.weather['error']:
-                self.outdoor = ow.Owm()
-        except(KeyError):
-            pass
-        return self.outdoor
         
     def get_resource_path(self,rel_path):
         dir_of_py_file = os.path.dirname(sys.argv[0])
@@ -195,9 +191,49 @@ class Main():
         config['dewpoint']['dewpoint_state'] = str(args[6])
         with open(self.get_resource_path('info.cfg'), 'w') as configfile:
             config.write(configfile)
+
+    def write_db(self):
+
+        create_weather_table = """CREATE TABLE IF NOT EXISTS weather(
+                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                                            Condition TEXT NOT NULL, 
+                                                            OTemp TEXT NOT NULL, 
+                                                            WindSpeed INT NOT NULL, 
+                                                            FeelsLike REAL, 
+                                                            DewPoint REAL, 
+                                                            RelHumidity REAL, 
+                                                            Barometer REAL, 
+                                                            TDate
+                                                    ); """
+
+        condition = self.outdoor.status
+        otemp = self.outdoor.outdoor_temp
+        windspeed = self.outdoor.wind_speed
+        feelslike = self.outdoor.windchill
+        dewpoint = self.outdoor.dewpoint
+        relhumidity = self.outdoor.humidity
+        barometer = self.outdoor.barometer_p
+        zip_code = self.outdoor.zip_code
+        print(zip_code)
+
+        # create a database connection
+        conn, cur = self.database.create_connection("weather.db")
+        if conn is not None:
+            # create projects table
+            #self.database.add_column(cur, 'weather', 'Zip', 'TEXT' )
+            self.database.create_table(cur, conn, create_weather_table)
+            self.database.show_columns(cur, "weather")
+
+
+        else:
+            print("Error! cannot create the database connection.")
+        self.database.add_row(cur, condition, otemp, windspeed, feelslike, dewpoint, relhumidity, barometer, zip_code)
+        self.database.printDB(cur, conn)
+
+        self.database.close(conn)
             
     def refresh_info(self):
-        
+
         self.frame0.destroy()
         try:
             self.frame0 = tk.Frame(self.root,background=self.background)
@@ -206,7 +242,7 @@ class Main():
             # whole container frame
             self.f_all = tk.Frame(self.frame0,border='2',relief='sunken',background=self.background)
             self.f_all.grid(column='0',row='0',columnspan='2',rowspan='6', padx=(45,0),pady=(55,0),sticky="new") # 110,0 55,0
-        
+
             # left container frame
             self.f_left = tk.Frame(self.f_all,background=self.background)
             self.f_left.grid(column='0',row='0',rowspan='7', padx=(0,0),pady=(0,0),sticky="new")
@@ -266,16 +302,17 @@ class Main():
         # call indoor temp function
         self.indoor.readDHT22()
 
-        #self.check_online()
 
         # get weather info from the internet
         self.outdoor.get_weather_info()
         
         # populate the weather info from the net.
         self.outdoor.gleen_info()
+        self.outdoor.forcast()
         
         # write info
         self.set_info()
+        self.write_db()
 
         # Add sign for display
         self.sign_plus()

@@ -32,7 +32,6 @@ class Indoor():
                 self.dht22.trigger()
                 print('DHT22 sensor reading ' + str(self.dht22.temperature()))
                 print('waiting  ' + str(self.sleepTime) + ' Seconds')
-                time.sleep(self.sleepTime)
 
                 
             # Save our values
@@ -40,6 +39,7 @@ class Indoor():
             temp = float(self.dht22.temperature())
             self.inside_temp_f_conv = int(temp*1.8+32) # Convert to fahrenheit
             self.inside_temp_f = str(self.inside_temp_f_conv)
+            print(self.inside_hum_d)
             
             
             # Indoor temp
