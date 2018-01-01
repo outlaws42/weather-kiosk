@@ -3,16 +3,17 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
+from operator import itemgetter
 
 class Database():
     def __init__(self):
         pass
 
-    def printDB(self, cursor, conn):
+    def printDB(self, cursor, conn, select):
 
         try:
             cursor = conn.cursor()
-            results = cursor.execute("SELECT ID, Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip FROM Weather ")
+            results = cursor.execute(select)
 
             for row in results:
                 print("ID :", row[0])
@@ -25,10 +26,22 @@ class Database():
                 print("Barometer :", row[7])
                 print("Date :", row[8])
                 print("Zip :", row[9])
+                print(" ")
         except sqlite3.OperationalError:
             print("The Table Doesn't Exist")
-
-
+            
+    def high_temp_today(self,cursor,conn):
+        cursor = conn.cursor()
+        results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
+        try:
+            today = list(results)
+            high_low = sorted(today, key=itemgetter(2), reverse=True)
+            high = high_low[0]
+        except IndexError as e:
+            print(e)
+            pass
+        return high
+        
     def create_connection(self,db_file):
          """ Make connection to an SQLite database file """
          try:
@@ -70,11 +83,16 @@ class Database():
         print(names)
 
     def add_row(self, cursor, *args):
-
+        print(len(args))
         try:
-            cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-            "VALUES (?,?,?,?,?,?,?,DATE('now'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
-            print("added row")
+            if len(args) == 8:
+                cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,datetime('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
+                print("added row to weather")
+            else:
+                cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
+                print("added row to high")
 
         except sqlite3.IntegrityError as e:
             print("test to see error" + str(e))

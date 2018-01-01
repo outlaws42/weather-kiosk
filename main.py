@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.0.7'
+    version = '2.0.8'
     software = 'Weather Kiosk' 
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -85,7 +85,7 @@ class Main():
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        # self.root.overrideredirect(1) # Make the window borderless
+        self.root.overrideredirect(1) # Make the window borderless
         self.frame0 = tk.Frame(self.root,background=self.background)
         self.frame0.grid(column='0',row='0',sticky="ew")
         
@@ -191,10 +191,25 @@ class Main():
         config['dewpoint']['dewpoint_state'] = str(args[6])
         with open(self.get_resource_path('info.cfg'), 'w') as configfile:
             config.write(configfile)
-
-    def write_db(self):
-
-        create_weather_table = """CREATE TABLE IF NOT EXISTS weather(
+            
+        # DATABASE CALLS
+        
+    def check_high_db_time(self):
+        now = datetime.datetime.now()
+        today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
+        print(today1130pm)
+        print(now)
+        if now >= today1130pm:
+            conn, cur = self.database.create_connection(self.database_path)
+            self.high = self.database.high_temp_today(cur, conn)
+            self.database.close(conn)
+            self.db_config_high()
+        else:
+            pass
+            
+    def db_config_high(self):
+        idr,con,tem,win,feel,dew,rel,bar,da,zi= self.high
+        create_table = """CREATE TABLE IF NOT EXISTS high(
                                                             ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                                             Condition TEXT NOT NULL, 
                                                             OTemp TEXT NOT NULL, 
@@ -206,7 +221,40 @@ class Main():
                                                             TDate,
                                                             Zip TEXT
                                                     ); """
-
+                                                    
+        prin = """SELECT ID, Condition, OTemp, WindSpeed, 
+                    FeelsLike, DewPoint, RelHumidity, Barometer, 
+                    TDate, Zip FROM high """
+        database_loc = 'lib/weather.db'
+        condition = con
+        otemp = tem
+        windspeed = win
+        feelslike = feel
+        dewpoint = dew
+        relhumidity = rel
+        barometer = bar
+        date_today= da
+        zip_code = zi
+        self.write_high_db(database_loc,create_table,prin,condition,otemp, windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
+    
+    def db_config_wether(self):
+        create_table = """CREATE TABLE IF NOT EXISTS weather(
+                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                                            Condition TEXT NOT NULL, 
+                                                            OTemp TEXT NOT NULL, 
+                                                            WindSpeed INT NOT NULL, 
+                                                            FeelsLike REAL, 
+                                                            DewPoint REAL, 
+                                                            RelHumidity REAL, 
+                                                            Barometer REAL, 
+                                                            TDate,
+                                                            Zip TEXT
+                                                    ); """
+                                                    
+        prin = """SELECT ID, Condition, OTemp, WindSpeed, 
+                    FeelsLike, DewPoint, RelHumidity, Barometer, 
+                    TDate, Zip FROM weather """
+        database_loc = 'lib/weather.db'
         condition = self.outdoor.status
         otemp = self.outdoor.outdoor_temp
         windspeed = self.outdoor.wind_speed
@@ -215,23 +263,34 @@ class Main():
         relhumidity = self.outdoor.humidity
         barometer = self.outdoor.barometer_p
         zip_code = self.outdoor.zip_code
-        print(zip_code)
+        self.write_db(database_loc,create_table,prin,condition,otemp, windspeed,feelslike,dewpoint,relhumidity,barometer,zip_code)
+
+    def write_db(self, *args):
+        self.database_path = self.get_resource_path(args[0])
 
         # create a database connection
-        conn, cur = self.database.create_connection("weather.db")
+        conn, cur = self.database.create_connection(self.database_path)
         if conn is not None:
             # create projects table
-            #self.database.add_column(cur, 'weather', 'Zip', 'TEXT' )
-            self.database.create_table(cur, conn, create_weather_table)
-            self.database.show_columns(cur, "weather")
-
-
+            self.database.create_table(cur, conn, args[1])
         else:
             print("Error! cannot create the database connection.")
-        self.database.add_row(cur, condition, otemp, windspeed, feelslike, dewpoint, relhumidity, barometer, zip_code)
-        self.database.printDB(cur, conn)
-
+        self.database.add_row(cur, args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
+        self.database.printDB(cur, conn, args[2])
         self.database.close(conn)
+        
+    def write_high_db(self, *args):
+        database_path = self.get_resource_path(args[0])
+        
+        # create a database connection
+        conn, cur = self.database.create_connection(database_path)
+        # create projects table
+        self.database.create_table(cur, conn, args[1])
+        self.database.add_row(cur, args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11])
+        self.database.printDB(cur, conn, args[2])
+        self.database.close(conn)
+        
+        # END DATABASE CALLS
             
     def refresh_info(self):
 
@@ -313,7 +372,7 @@ class Main():
         
         # write info
         self.set_info()
-        self.write_db()
+        self.db_config_wether()
 
         # Add sign for display
         self.sign_plus()
@@ -335,6 +394,7 @@ class Main():
             print('display_outdoor error:  ' + str(e)) #debug
             logging.info('display_outdoor error:  ' + str(e))
             pass
+        self.check_high_db_time()  # Get high temp for the day
         self.display_refresh()
         self.frame0.after(self.refresh_rate,self.refresh_info)
 
