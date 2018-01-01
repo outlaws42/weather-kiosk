@@ -87,7 +87,7 @@ class Database():
         try:
             if len(args) == 8:
                 cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-                "VALUES (?,?,?,?,?,?,?,datetime('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
+                "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
                 print("added row to weather")
             else:
                 cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
