@@ -30,6 +30,21 @@ class Database():
         except sqlite3.OperationalError:
             print("The Table Doesn't Exist")
             
+    def high_low_temp_today(self,cursor,conn):
+        cursor = conn.cursor()
+        results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
+        #results = cursor.execute("SELECT * from weather where TDate =  '2017-12-127'" )
+        try:
+            today = list(results)
+            high_low = sorted(today, key=itemgetter(2), reverse=True)
+            low_high = sorted(today, key=itemgetter(2))
+            high = high_low[0]
+            low = low_high[0]
+            return high, low
+        except IndexError as e:
+            print(e)
+            pass
+            
     def high_temp_today(self,cursor,conn):
         cursor = conn.cursor()
         results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
@@ -37,10 +52,49 @@ class Database():
             today = list(results)
             high_low = sorted(today, key=itemgetter(2), reverse=True)
             high = high_low[0]
+            return high
         except IndexError as e:
             print(e)
             pass
-        return high
+    
+    def high_temp(self,cursor,conn):
+        cursor = conn.cursor()
+    
+        try:
+            results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
+            today = list(results)
+            high = today[0]
+            return high
+        except IndexError as e:
+            print(e)
+            pass
+            
+    def low_temp(self,cursor,conn):
+        cursor = conn.cursor()
+    
+        try:
+            results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
+            today = list(results)
+            low = today[0]
+            return low
+        except IndexError as e:
+            print(e)
+            pass
+                
+    def high_low_temp(self,cursor,conn):
+        cursor = conn.cursor()
+    
+        try:
+            h_results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
+            l_results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
+            today_h = list(h_results)
+            today_l = list(l_results)
+            high = today_h[0]
+            low = today_l[0]
+            return high, low
+        except IndexError as e:
+            print(e)
+            pass
         
     def create_connection(self,db_file):
          """ Make connection to an SQLite database file """
@@ -93,10 +147,25 @@ class Database():
                 cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
                 print("added row to high")
+        except sqlite3.OperationalError as e:
+            print(e)
 
-        except sqlite3.IntegrityError as e:
-            print("test to see error" + str(e))
+                
+    def add_row_low(self, cursor, *args):
+        print(len(args))
+        try:
+            if len(args) == 8:
+                cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
+                print("added row to weather")
+            else:
+                cursor.execute("INSERT INTO low (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
+                print("added row to low")
+        except sqlite3.OperationalError as e:
+            print(e)
 
+                
     def delete_table(cursor,conn,table_name):
         """ You can delete a table if it exists like this """
         cursor.execute('DROP TABLE IF EXISTS {}'.format(table_name))

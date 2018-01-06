@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.0.8'
+    version = '2.0.9'
     software = 'Weather Kiosk' 
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -85,7 +85,7 @@ class Main():
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        self.root.overrideredirect(1) # Make the window borderless
+        #self.root.overrideredirect(1) # Make the window borderless
         self.frame0 = tk.Frame(self.root,background=self.background)
         self.frame0.grid(column='0',row='0',sticky="ew")
         
@@ -95,7 +95,7 @@ class Main():
         #self.outdoor = no.Noaa() 
         self.indoor = indr.Indoor()
         self.database = db.Database()
-
+        self.intial_past_db()
         # Call refresh of data
         self.refresh_info()
         
@@ -115,6 +115,16 @@ class Main():
         rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
         abs_path_to_resource = os.path.abspath(rel_path_to_resource)
         return abs_path_to_resource
+        
+    def intial_past_db(self):
+        self.database_path = self.get_resource_path('lib/weather.db')
+        self.now_date = datetime.date.today()
+        conn, cur = self.database.create_connection(self.database_path)
+        high = self.database.high_temp(cur, conn)
+        low = self.database.low_temp(cur, conn)
+        #high = self.database.high_temp(cur,conn)
+        self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
+        self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
         
     def status_images(self,number,number2):
         if number > number2:
@@ -141,6 +151,8 @@ class Main():
         self.dewpoint = self.outdoor.dewpoint + self.degree_sign
         self.visibility = self.outdoor.visibility + ' mi'
         self.weather_service = self.outdoor.weather_service + '/    ' + self.software + ' ' + self.version
+        self.past_temp_h = self.tempp , self.degree_sign
+        self.past_temp_l = self.templ , self.degree_sign
 
     #############################################
     # Info calls                                #
@@ -194,16 +206,22 @@ class Main():
             
         # DATABASE CALLS
         
-    def check_high_db_time(self):
+    def get_high_low_temp_db(self):
         now = datetime.datetime.now()
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
         print(today1130pm)
         print(now)
         if now >= today1130pm:
             conn, cur = self.database.create_connection(self.database_path)
-            self.high = self.database.high_temp_today(cur, conn)
+            high_low = self.database.high_low_temp_today(cur, conn)
+            self.high = high_low[0]
+            self.low = high_low[1]
+            #self.high = self.database.high_temp_today(cur, conn)
             self.database.close(conn)
+            print(self.high)
+            print(self.low)
             self.db_config_high()
+            self.db_config_low()
         else:
             pass
             
@@ -212,8 +230,8 @@ class Main():
         create_table = """CREATE TABLE IF NOT EXISTS high(
                                                             ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                                             Condition TEXT NOT NULL, 
-                                                            OTemp TEXT NOT NULL, 
-                                                            WindSpeed INT NOT NULL, 
+                                                            OTemp INTEGER NOT NULL, 
+                                                            WindSpeed INTEGER NOT NULL, 
                                                             FeelsLike REAL, 
                                                             DewPoint REAL, 
                                                             RelHumidity REAL, 
@@ -237,12 +255,42 @@ class Main():
         zip_code = zi
         self.write_high_db(database_loc,create_table,prin,condition,otemp, windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
     
+    def db_config_low(self):
+        idr,con,tem,win,feel,dew,rel,bar,da,zi= self.low
+        create_table = """CREATE TABLE IF NOT EXISTS low(
+                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                                            Condition TEXT NOT NULL, 
+                                                            OTemp INTEGER NOT NULL, 
+                                                            WindSpeed INTEGER NOT NULL, 
+                                                            FeelsLike REAL, 
+                                                            DewPoint REAL, 
+                                                            RelHumidity REAL, 
+                                                            Barometer REAL, 
+                                                            TDate,
+                                                            Zip TEXT
+                                                    ); """
+                                                    
+        prin = """SELECT ID, Condition, OTemp, WindSpeed, 
+                    FeelsLike, DewPoint, RelHumidity, Barometer, 
+                    TDate, Zip FROM low """
+        database_loc = 'lib/weather.db'
+        condition = con
+        otemp = tem
+        windspeed = win
+        feelslike = feel
+        dewpoint = dew
+        relhumidity = rel
+        barometer = bar
+        date_today= da
+        zip_code = zi
+        self.write_low_db(database_loc,create_table,prin,condition,otemp, windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
+    
     def db_config_wether(self):
         create_table = """CREATE TABLE IF NOT EXISTS weather(
                                                             ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                                             Condition TEXT NOT NULL, 
-                                                            OTemp TEXT NOT NULL, 
-                                                            WindSpeed INT NOT NULL, 
+                                                            OTemp INTEGER NOT NULL, 
+                                                            WindSpeed INTEGER NOT NULL, 
                                                             FeelsLike REAL, 
                                                             DewPoint REAL, 
                                                             RelHumidity REAL, 
@@ -266,7 +314,7 @@ class Main():
         self.write_db(database_loc,create_table,prin,condition,otemp, windspeed,feelslike,dewpoint,relhumidity,barometer,zip_code)
 
     def write_db(self, *args):
-        self.database_path = self.get_resource_path(args[0])
+        #self.database_path = self.get_resource_path(args[0])
 
         # create a database connection
         conn, cur = self.database.create_connection(self.database_path)
@@ -276,19 +324,41 @@ class Main():
         else:
             print("Error! cannot create the database connection.")
         self.database.add_row(cur, args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
-        self.database.printDB(cur, conn, args[2])
+        #self.database.printDB(cur, conn, args[2])
         self.database.close(conn)
         
     def write_high_db(self, *args):
-        database_path = self.get_resource_path(args[0])
+        #database_path = self.get_resource_path(args[0])
         
         # create a database connection
-        conn, cur = self.database.create_connection(database_path)
+        conn, cur = self.database.create_connection(self.database_path)
         # create projects table
         self.database.create_table(cur, conn, args[1])
         self.database.add_row(cur, args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11])
-        self.database.printDB(cur, conn, args[2])
+        #self.database.printDB(cur, conn, args[2])
         self.database.close(conn)
+        
+    def write_low_db(self, *args):
+        #database_path = self.get_resource_path(args[0])
+        
+        # create a database connection
+        conn, cur = self.database.create_connection(self.database_path)
+        # create projects table
+        self.database.create_table(cur, conn, args[1])
+        self.database.add_row_low(cur, args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11])
+        #self.database.printDB(cur, conn, args[2])
+        self.database.close(conn)
+        
+    def read_past_db(self):
+        today = datetime.date.today()
+        if self.now_date != today:
+            conn, cur = self.database.create_connection(self.database_path)
+            high = self.database.high_temp(cur, conn)
+            low = self.database.low_temp(cur,conn)
+            self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
+            self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
+            self.now_date = datetime.date.today()
+        
         
         # END DATABASE CALLS
             
@@ -373,6 +443,9 @@ class Main():
         # write info
         self.set_info()
         self.db_config_wether()
+        
+        # read from db
+        self.read_past_db()
 
         # Add sign for display
         self.sign_plus()
@@ -394,7 +467,7 @@ class Main():
             print('display_outdoor error:  ' + str(e)) #debug
             logging.info('display_outdoor error:  ' + str(e))
             pass
-        self.check_high_db_time()  # Get high temp for the day
+        self.get_high_low_temp_db()  # Get high low temp for the day
         self.display_refresh()
         self.frame0.after(self.refresh_rate,self.refresh_info)
 
@@ -441,14 +514,20 @@ class Main():
             if self.indoor.inside_temp_f >'0':
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.foreground,bg=self.background,font=self.font_temp,text=self.indoor.indoor_temp)
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',columnspan='2',padx=(50,50))
+                indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,bg=self.background,font=self.font_general,text=self.indoor.indoor_hum)
+                indoor_hum.grid(row='4',column='0',padx=(145,0))
             else:
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.color_1,bg=self.background,font=self.font_temp,text='70')
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',padx=(50,50))
+                indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,bg=self.background,font=self.font_general,text='??%')
+                indoor_hum.grid(row='3',column='0',padx=(145,0))
         except (NameError, AttributeError) as e:
             print('display_indoor error:  ' + str(e)) #debug
             logging.info('display_indoor error:  ' + str(e))
             indoor_temp = tk.Label(self.f_indoor_temp,fg=self.color_4,bg=self.background,font=self.font_temp,text='70')
             indoor_temp.grid(row='1',column='0', sticky='w', rowspan='4', columnspan='2',padx=(50,50))
+            indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,bg=self.background,font=self.font_general,text='??%')
+            indoor_hum.grid(row='3',column='0',padx=(145,0))
        
         # Indoor Temp label
         indoor_label = tk.Label(self.f_indoor_temp,fg=self.foreground,bg=self.background,font=self.font_general,text="Indoor(F)")
@@ -469,6 +548,15 @@ class Main():
         status_text.grid(row='1',column='1',sticky='w',pady=(0,0),padx=(0,0))
         status_info = tk.Label(self.f_top,fg=self.color_2,bg=self.background,font=self.font_hum,text=self.outdoor.status)
         status_info.grid(row='1',column='2',sticky='w',pady=(0,0),padx=(0,0))
+        past_h_text = tk.Label(self.f_top,fg=self.foreground,bg=self.background,font=self.font_hum,text='YH: ')
+        past_h_text.grid(row='2',column='2',sticky='w',pady=(0,0),padx=(180,0))
+        past_h_info = tk.Label(self.f_top,fg=self.color_2,bg=self.background,font=self.font_hum,text=self.past_temp_h)
+        past_h_info.grid(row='2',column='2',sticky='w',pady=(0,0),padx=(250,0))
+        past_l_text = tk.Label(self.f_top,fg=self.foreground,bg=self.background,font=self.font_hum,text='YL: ')
+        past_l_text.grid(row='3',column='2',sticky='w',pady=(0,0),padx=(180,0))
+        past_l_info = tk.Label(self.f_top,fg=self.color_2,bg=self.background,font=self.font_hum,text=self.past_temp_l)
+        past_l_info.grid(row='3',column='2',sticky='w',pady=(0,0),padx=(250,0))
+
 
          # weather sevice indicator 
         service_text = tk.Label(self.lef_bottom,fg=self.foreground,bg=self.background,font=self.font_ws,text=self.weather_service)

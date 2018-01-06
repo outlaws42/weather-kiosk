@@ -32,6 +32,8 @@ class Indoor():
                 self.dht22.trigger()
                 print('DHT22 sensor reading ' + str(self.dht22.temperature()))
                 print('waiting  ' + str(self.sleepTime) + ' Seconds')
+                logging.info('waiting  ' + str(self.sleepTime) + ' Seconds')
+                time.sleep(self.sleepTime)
 
                 
             # Save our values
@@ -44,6 +46,7 @@ class Indoor():
             
             # Indoor temp
             self.indoor_temp = self.inside_temp_f + '' + self.degree_sign
+            self.indoor_hum= round(float(self.inside_hum_d)),'%'
         except(NameError, AttributeError) as e:
             logging.info('No temp sensor found  ' + str(e))
             print('No temp sensor found  ' + str(e))

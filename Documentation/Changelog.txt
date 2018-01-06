@@ -13,3 +13,11 @@ Intial stable release with seperate files for each outdoor service.
 
 2.0.7 (12/28/2017)
 * Added database
+
+2.0.8 (1/4/2018)
+* Added high temp for the past (Right now it is yesterday)
+* Added to display indoor humidity.
+
+2.0.9 (1/5/2018)
+* Added low temp for the past (Right now it is yesterday)
+
