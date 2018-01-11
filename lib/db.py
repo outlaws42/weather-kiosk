@@ -63,8 +63,9 @@ class Database():
         try:
             results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
             today = list(results)
-            high = today[0]
-            return high
+            if today:
+                high = today[0]
+                return high
         except IndexError as e:
             print(e)
             pass
@@ -75,26 +76,13 @@ class Database():
         try:
             results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
             today = list(results)
-            low = today[0]
-            return low
+            if today:
+                low = today[0]
+                return low
         except IndexError as e:
             print(e)
             pass
                 
-    def high_low_temp(self,cursor,conn):
-        cursor = conn.cursor()
-    
-        try:
-            h_results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
-            l_results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
-            today_h = list(h_results)
-            today_l = list(l_results)
-            high = today_h[0]
-            low = today_l[0]
-            return high, low
-        except IndexError as e:
-            print(e)
-            pass
         
     def create_connection(self,db_file):
          """ Make connection to an SQLite database file """

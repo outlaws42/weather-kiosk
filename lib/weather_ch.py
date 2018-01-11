@@ -65,6 +65,7 @@ class WeatherCh():
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
             self.wind='0'
+            self.wind_speed = 0
             self.wind_gust = 'Gust ER'
             pass
             

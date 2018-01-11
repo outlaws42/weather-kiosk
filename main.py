@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.0.9'
+    version = '2.1.0'
     software = 'Weather Kiosk' 
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -116,16 +116,8 @@ class Main():
         abs_path_to_resource = os.path.abspath(rel_path_to_resource)
         return abs_path_to_resource
         
-    def intial_past_db(self):
-        self.database_path = self.get_resource_path('lib/weather.db')
-        self.now_date = datetime.date.today()
-        conn, cur = self.database.create_connection(self.database_path)
-        high = self.database.high_temp(cur, conn)
-        low = self.database.low_temp(cur, conn)
-        #high = self.database.high_temp(cur,conn)
-        self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
-        self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
-        
+
+            
     def status_images(self,number,number2):
         if number > number2:
             arrow = tk.PhotoImage(file=self.get_resource_path('Images/40/arrow_up.png'))
@@ -355,11 +347,30 @@ class Main():
             conn, cur = self.database.create_connection(self.database_path)
             high = self.database.high_temp(cur, conn)
             low = self.database.low_temp(cur,conn)
+            self.now_date = datetime.date.today()
+            try:
+                self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
+                self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
+            except TypeError as e:
+                print(e)
+                self.tempp = 'ND'
+                self.templ = 'ND'
+            
+        
+    def intial_past_db(self):
+        self.database_path = self.get_resource_path('lib/weather.db')
+        self.now_date = datetime.date.today()
+        conn, cur = self.database.create_connection(self.database_path)
+        high = self.database.high_temp(cur, conn)
+        low = self.database.low_temp(cur, conn)
+        #high = self.database.high_temp(cur,conn)
+        try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
             self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
-            self.now_date = datetime.date.today()
-        
-        
+        except TypeError as e:
+            print(e)
+            self.tempp = 'ND'
+            self.templ = 'ND'    
         # END DATABASE CALLS
             
     def refresh_info(self):
@@ -659,7 +670,9 @@ class Main():
             
     def quit_button(self):
         # Quit button settings
+        self.photo=tk.PhotoImage(file=self.get_resource_path("Images/40/sunny_40.png"))
         quitButton = tk.Button(self.f_quit, bg=self.background,fg=self.color_3,font=self.font_q,text = "X",command=self.root.quit)
+        quitButton.config(image=self.photo,width="20",height="20")
         quitButton.grid(column='3',row='12',sticky='sw',pady=(0,5),padx=(5,5))
         
 

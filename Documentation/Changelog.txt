@@ -21,3 +21,8 @@ Intial stable release with seperate files for each outdoor service.
 2.0.9 (1/5/2018)
 * Added low temp for the past (Right now it is yesterday)
 
+2.1.0 (1/8/2018)
+* Added image to close button.
+* fix out of range if database doesn't have a entry for the past
+* fix set variables with ND if database doesn't have a past entry
+
