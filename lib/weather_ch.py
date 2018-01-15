@@ -7,27 +7,29 @@ import tkinter as tk
 import configparser
 import pywapi
 import logging
+import inspect
 logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
     zip_code = '46764'
-    
+
     def __init__(self):
         pass
-        
+
     def get_resource_path(self,rel_path):
         dir_of_py_file = os.path.dirname(sys.argv[0])
         rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
         abs_path_to_resource = os.path.abspath(rel_path_to_resource)
         return abs_path_to_resource
-        
+
     def get_weather_info(self):
         self.weather = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
-        
+        print('icon ', self.weather['current_conditions']['icon'])
+
     def gleen_info(self):
 
-        # weather service 
+        # weather service
         self.weather_service = 'Provided by:  The Weather Channel'
 
         try:    # left weather info
@@ -38,7 +40,7 @@ class WeatherCh():
             logging.info('Status weather error:  ' + str(e))
             self.status = 'Status ER'
             pass
-            
+
         try:
             # outside temp .
             self.outdoor_temp = self.weather['current_conditions']['temperature']
@@ -47,8 +49,8 @@ class WeatherCh():
             logging.info('Outdoor temp weather error:  ' + str(e))
             self.outdoor_temp = '0'
             pass
-            
-        try:    
+
+        try:
             # right weather info
             # wind
             self.wind_dir = self.weather['current_conditions']['wind']['text']
@@ -60,7 +62,7 @@ class WeatherCh():
                 self.wind_speed = self.weather['current_conditions']['wind']['speed']
             self.wind_gust =  self.weather['current_conditions']['wind']['gust']
 
-            
+
         except(KeyError) as e:
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
@@ -68,9 +70,9 @@ class WeatherCh():
             self.wind_speed = 0
             self.wind_gust = 'Gust ER'
             pass
-            
+
         try:
-            
+
             # Last updated
             self.update = "Updated:  " + self.weather['current_conditions']['last_updated']
             self.update_list = list(self.update) # convert to list
@@ -91,7 +93,7 @@ class WeatherCh():
             logging.info('Dewpoint weather error:  ' + str(e))
             self.dewpoint = "0"
             pass
-        try:    
+        try:
             # Humidity
             self.humidity = self.weather['current_conditions']['humidity']
         except(KeyError) as e:
@@ -99,7 +101,7 @@ class WeatherCh():
             logging.info('Humidity check_weather error:  ' + str(e))
             self.humidity = "0"
             pass
-            
+
         try:
             # Feels Like
             self.windchill = self.weather['current_conditions']['feels_like']
@@ -109,7 +111,7 @@ class WeatherCh():
             self.windchill = "0"
             pass
 
-        try:    
+        try:
             # uv index
             self.uv =  self.weather['current_conditions']['uv']['text']
         except(KeyError) as e:
@@ -164,7 +166,7 @@ class WeatherCh():
             # weather conditon codes
             self.forecast_0_day_code = self.weather['forecasts'][0]['day']['icon']
             self.forecast_0_night_code = self.weather['forecasts'][0]['night']['icon']
-            
+
             # Precip %
             self.forecast_0_night_precip = self.weather['forecasts'][0]['night']['chance_precip'] + '%'
             self.forecast_0_day_precip = self.weather['forecasts'][0]['day']['chance_precip'] + '%'
@@ -197,20 +199,20 @@ class WeatherCh():
             # weather conditon codes
             self.forecast_1_day_code = self.weather['forecasts'][1]['day']['icon']
             self.forecast_1_night_code = self.weather['forecasts'][1]['night']['icon']
-        
+
             # Precip %
             self.forecast_1_night_precip = self.weather['forecasts'][1]['night']['chance_precip'] + '%'
             self.forecast_1_day_precip = self.weather['forecasts'][1]['day']['chance_precip'] + '%'
-        
+
             # slice day 1
             self.forecast_1_day_long = self.weather['forecasts'][1]['day_of_week']
             self.forecast_1_list = list(self.forecast_1_day_long) # convert to list
             self.forecast_1_list[3:] = [] # slice list to show what we want
             self.forecast_1_day = "".join(self.forecast_1_list) # join back to a string
-        
+
             # temp high/low
             self.forecast_1 = self.weather['forecasts'][1]['high'] + self.degree_sign + '/' + self.weather['forecasts'][1]['low'] + self.degree_sign
-        
+
         except(KeyError) as e:
             print('day 2 weather error:  ' + str(e)) #debug
             logging.info('day 2 weather error:  ' + str(e))
@@ -230,24 +232,24 @@ class WeatherCh():
             # weather conditon codes
             self.forecast_2_day_code = self.weather['forecasts'][2]['day']['icon']
             self.forecast_2_night_code = self.weather['forecasts'][2]['night']['icon']
-        
+
             # Precip %
             self.forecast_2_night_precip = self.weather['forecasts'][2]['night']['chance_precip'] + '%'
             self.forecast_2_day_precip = self.weather['forecasts'][2]['day']['chance_precip'] + '%'
-        
+
             # slice day 2
             self.forecast_2_day_long = self.weather['forecasts'][2]['day_of_week']
             self.forecast_2_list = list(self.forecast_2_day_long) # convert to list
             self.forecast_2_list[3:] = [] # slice list to show what we want
             self.forecast_2_day = "".join(self.forecast_2_list) # join back to a string
-            
+
             # temp high/low
             self.forecast_2 = self.weather['forecasts'][2]['high'] + self.degree_sign + '/' + self.weather['forecasts'][2]['low'] + self.degree_sign
 
             # weather condition icon
             self.forecast_2_day_icon=self.icon_select(self.forecast_2_day_code)
             self.forecast_2_night_icon=self.icon_select(self.forecast_2_night_code)
- 
+
         except(KeyError) as e:
             print('day 3 weather error:  ' + str(e)) #debug
             logging.info('day 3 weather error:  ' + str(e))
@@ -261,44 +263,77 @@ class WeatherCh():
         # weather condition icon
         self.forecast_2_day_icon=self.icon_select(self.forecast_2_day_code)
         self.forecast_2_night_icon=self.icon_select(self.forecast_2_night_code)
-            
-        
+
+
     def icon_select(self,icon_code):
         self.icon_code = icon_code
-        if self.icon_code in '0': #Tornado
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/tornado_65.png'))
-        elif self.icon_code in ('5','6','7','8','9','10','11','12','17','18','35','40'): #rain
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/rain_65.png'))
-        elif self.icon_code in ('13','14','15','16','41','42','43','46'): #Snow
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/snow_65.png'))
-        elif self.icon_code in ('20','21'): #Foggy or Haze
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/fog_65.png'))
-        elif self.icon_code in ('23','24'): # Windy 
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/wind_65.png'))
-        elif self.icon_code == '25': #Cold
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cold_65.png'))
-        elif self.icon_code == '36': #Hot
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/hot_65.png'))
-        elif self.icon_code in ('26','44'): #Cloudy
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_65.png'))
-        elif self.icon_code in ('27','29'): #Mostly Cloudy(Night)
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_night_65.png'))
-        elif self.icon_code in ('28','30'): #Mostly Cloudy(Day)
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_day_65.png'))
-        elif self.icon_code in ('31','33'): #Clear(Night),Fair(Night)
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/clear_night_65.png'))
-        elif self.icon_code in ('32','34'): #Sunny,Fair(day)
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/sunny_65.png'))
-        elif self.icon_code in ('4','37','38','39','45','47'): #Thunderstorms
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_65.png'))
-        elif self.icon_code == '3': #Severe Thunderstorms
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_severe_65.png'))
+        source = inspect.stack()[1][3]
+        print('This was called from ', source)
+        if source == 'forcast':
+            if self.icon_code in '0': #Tornado
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/tornado_65.png'))
+            elif self.icon_code in ('5','6','7','8','9','10','11','12','17','18','35','40'): #rain
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/rain_65.png'))
+            elif self.icon_code in ('13','14','15','16','41','42','43','46'): #Snow
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/snow_65.png'))
+            elif self.icon_code in ('20','21'): #Foggy or Haze
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/fog_65.png'))
+            elif self.icon_code in ('23','24'): # Windy
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/wind_65.png'))
+            elif self.icon_code == '25': #Cold
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cold_65.png'))
+            elif self.icon_code == '36': #Hot
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/hot_65.png'))
+            elif self.icon_code in ('26','44'): #Cloudy
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_65.png'))
+            elif self.icon_code in ('27','29'): #Mostly Cloudy(Night)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_night_65.png'))
+            elif self.icon_code in ('28','30'): #Mostly Cloudy(Day)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_day_65.png'))
+            elif self.icon_code in ('31','33'): #Clear(Night),Fair(Night)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/clear_night_65.png'))
+            elif self.icon_code in ('32','34'): #Sunny,Fair(day)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/sunny_65.png'))
+            elif self.icon_code in ('4','37','38','39','45','47'): #Thunderstorms
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_65.png'))
+            elif self.icon_code == '3': #Severe Thunderstorms
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_severe_65.png'))
+            else:
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/x.png'))
         else:
-            self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/x.png'))
-        
+            if self.icon_code in '0': #Tornado
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/tornado_30.png'))
+            elif self.icon_code in ('5','6','7','8','9','10','11','12','17','18','35','40'): #rain
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/rain_30.png'))
+            elif self.icon_code in ('13','14','15','16','41','42','43','46'): #Snow
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/snow_30.png'))
+            elif self.icon_code in ('20','21'): #Foggy or Haze
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/fog_30.png'))
+            elif self.icon_code in ('23','24'): # Windy
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/wind_30.png'))
+            elif self.icon_code == '25': #Cold
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cold_30.png'))
+            elif self.icon_code == '36': #Hot
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/hot_30.png'))
+            elif self.icon_code in ('26','44'): #Cloudy
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_30.png'))
+            elif self.icon_code in ('27','29'): #Mostly Cloudy(Night)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_night_30.png'))
+            elif self.icon_code in ('28','30'): #Mostly Cloudy(Day)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/cloudy_day_30.png'))
+            elif self.icon_code in ('31','33'): #Clear(Night),Fair(Night)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/clear_night_30.png'))
+            elif self.icon_code in ('32','34'): #Sunny,Fair(day)
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/sunny_30.png'))
+            elif self.icon_code in ('4','37','38','39','45','47'): #Thunderstorms
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_30.png'))
+            elif self.icon_code == '3': #Severe Thunderstorms
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/thunderstorms_severe_30.png'))
+            else:
+                self.icon = tk.PhotoImage(file=self.get_resource_path('Images/65/x_30.png'))
+
         return(self.icon)
-    
+
 
 if __name__ == "__main__":
-    app = WeatherCh()    
-
+    app = WeatherCh()
