@@ -120,11 +120,11 @@ class Main():
 
     def status_images(self,number,number2):
         if number > number2:
-            arrow = tk.PhotoImage(file=self.get_resource_path('Images/40/arrow_up.png'))
+            arrow = tk.PhotoImage(file=self.get_resource_path('Images/20/arrow_up.png'))
         elif number < number2:
-            arrow = tk.PhotoImage(file=self.get_resource_path('Images/40/arrow_down.png'))
+            arrow = tk.PhotoImage(file=self.get_resource_path('Images/20/arrow_down.png'))
         else:
-            arrow = tk.PhotoImage(file=self.get_resource_path('Images/40/arrow_right.png'))
+            arrow = tk.PhotoImage(file=self.get_resource_path('Images/20/arrow_right.png'))
         return(arrow)
 
     def assign_status(self):
@@ -201,8 +201,6 @@ class Main():
     def get_high_low_temp_db(self):
         now = datetime.datetime.now()
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
-        print(today1130pm)
-        print(now)
         if now >= today1130pm:
             conn, cur = self.database.create_connection(self.database_path)
             high_low = self.database.high_low_temp_today(cur, conn)
@@ -210,8 +208,6 @@ class Main():
             self.low = high_low[1]
             #self.high = self.database.high_temp_today(cur, conn)
             self.database.close(conn)
-            print(self.high)
-            print(self.low)
             self.db_config_high()
             self.db_config_low()
         else:
@@ -671,7 +667,6 @@ class Main():
     def quit_button(self):
         # Quit button settings
         #self.quit_image=tk.PhotoImage(file=self.get_resource_path("Images/65/sunny_30.png"))
-        print('forcast code ', self.outdoor.weather['current_conditions']['icon'])
         self.quit_image=self.outdoor.icon_select(self.outdoor.weather['current_conditions']['icon'])
         quitButton = tk.Button(self.f_quit, bg=self.background,fg=self.color_3,font=self.font_q,text = "X",command=self.root.quit)
         quitButton.config(image=self.quit_image,width="25",height="25")

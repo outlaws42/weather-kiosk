@@ -29,7 +29,7 @@ class Database():
                 print(" ")
         except sqlite3.OperationalError:
             print("The Table Doesn't Exist")
-            
+
     def high_low_temp_today(self,cursor,conn):
         cursor = conn.cursor()
         results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
@@ -44,7 +44,7 @@ class Database():
         except IndexError as e:
             print(e)
             pass
-            
+
     def high_temp_today(self,cursor,conn):
         cursor = conn.cursor()
         results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
@@ -56,10 +56,10 @@ class Database():
         except IndexError as e:
             print(e)
             pass
-    
+
     def high_temp(self,cursor,conn):
         cursor = conn.cursor()
-    
+
         try:
             results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
             today = list(results)
@@ -69,10 +69,10 @@ class Database():
         except IndexError as e:
             print(e)
             pass
-            
+
     def low_temp(self,cursor,conn):
         cursor = conn.cursor()
-    
+
         try:
             results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
             today = list(results)
@@ -82,8 +82,8 @@ class Database():
         except IndexError as e:
             print(e)
             pass
-                
-        
+
+
     def create_connection(self,db_file):
          """ Make connection to an SQLite database file """
          try:
@@ -109,7 +109,6 @@ class Database():
         try:
             cursor.execute(create_table_sql)
             conn.commit()
-            print('DB Created')
         except sqlite3.OperationalError as e:
             print(e)
 
@@ -122,34 +121,28 @@ class Database():
             Every column will be represented by a tuple """
         cursor.execute('PRAGMA TABLE_INFO({})'.format(table_name))
         names = [tup[1] for tup in cursor.fetchall()]
-        print(names)
 
     def add_row(self, cursor, *args):
-        print(len(args))
         try:
             if len(args) == 8:
                 cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
-                print("added row to weather")
+
             else:
                 cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
-                print("added row to high")
         except sqlite3.OperationalError as e:
             print(e)
 
-                
+
     def add_row_low(self, cursor, *args):
-        print(len(args))
         try:
             if len(args) == 8:
                 cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
-                print("added row to weather")
             else:
                 cursor.execute("INSERT INTO low (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
-                print("added row to low")
         except sqlite3.OperationalError as e:
             print(e)
 
