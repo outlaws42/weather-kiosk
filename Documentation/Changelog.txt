@@ -26,3 +26,7 @@ Intial stable release with seperate files for each outdoor service.
 * fix out of range if database doesn't have a entry for the past
 * fix set variables with ND if database doesn't have a past entry
 
+2.1.2 (1/26/2018)
+* Moved close button to outdoor temp and removed border
+
+

@@ -9,25 +9,8 @@ logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s
 
 class Noaa():
     degree_sign= '\N{DEGREE SIGN}'
-    # Path variables
-  
-    # weather/forcast images
-    icon_clear_night_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','clear_night_65.png')
-    icon_cloudy_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','cloudy_65.png')
-    icon_cloudy_day_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','cloudy_day_65.png')
-    icon_cloudy_night_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','cloudy_night_65.png')
-    icon_cold_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','cold_65.png')
-    icon_hot_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','hot_65.png')
-    icon_fog_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','fog_65.png')
-    icon_rain_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','rain_65.png')
-    icon_snow_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','snow_65.png')
-    icon_sunny_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','sunny_65.png')
-    icon_thunderstorms_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','thunderstorms_65.png')
-    icon_thunderstorms_severe_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','thunderstorms_severe_65.png')
-    icon_tornado_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','tornado_65.png')
-    icon_wind_65 = os.path.join(os.path.expanduser('~'),'Weather','Images','65','wind_65.png')
-    
-      
+    zip_code = '46764'
+
     def __init__(self):
         print('This is noaa weather')
         #self.get_weather_info() #debug
@@ -35,56 +18,122 @@ class Noaa():
 
     def get_weather_info(self):
         self.weather = pywapi.get_weather_from_noaa('KFWA')
+        #for i,b in self.weather.items():
+            #print(i,": ",b)
+
         #return self.weather
-        
+
     def gleen_info(self):
 
-        try:
+
             # noaa get info
             #self.weather = pywapi.get_weather_from_noaa('KFWA')
             self.weather_service = 'Provided by:  NOAA Weather'
-        
-            # wind
-            self.wind_dir = self.weather['wind_dir']
-            self.wind = self.wind_dir + "  at  " + self.weather['wind_mph'] + " mph "
 
-            # Brings outside temp elements together.
-            self.outdoor_temp = str(round(float(self.weather['temp_f']))) + self.degree_sign
-
-            # brief discription of the weather
-            self.status = self.weather['weather']
-
-            # Last updated
-            self.update = self.weather['observation_time']
-            self.update_list = list(self.update) # convert to list
-            self.update_list[11:-12] = [] # slice list to show what we want
-            self.updated = "".join(self.update_list) # join back to a string
-
-            # dewpoint
-            self.dewpoint = self.weather['dewpoint_f'] + self.degree_sign
-
-            # Humidity
-            self.humidity = self.weather['relative_humidity'] +'%'
+            try:    # left weather info
+                # brief discription of the weather
+                self.status =self.weather['weather']
+                print(self.status)
+            except(KeyError) as e:
+                print('Status weather error:  ' + str(e)) #debug
+                logging.info('Status weather error:  ' + str(e))
+                self.status = 'Status ER'
+                pass
 
             try:
-            # wind chill
-                self.windchill = self.weather['windchill_f'] + self.degree_sign
+                # Outside Temp
+                self.outdoor_temp = str(round(float(self.weather['temp_f'])))
+                print(self.outdoor_temp)
             except(KeyError) as e:
-                print('noaa check_weather error:  ' + str(e)) #debug
-                logging.info('noaa check_weather error:  ' + str(e))
-                self.windchill = self.outdoor_temp
+                print('Outdoor temp weather error:  ' + str(e)) #debug
+                logging.info('Outdoor temp weather error:  ' + str(e))
+                self.outdoor_temp = '0'
+                pass
+            try:
+                # wind
+                self.wind_dir = self.weather['wind_dir']
+                self.wind_speed = str(round(float(self.weather['wind_mph'])))
+                if self.wind_speed == '0':
+                    self.wind = "0"
+                else:
+                    if self.wind_dir == 'Southwest':
+                        self.wind = "SW  at  " + self.wind_speed
+                    elif self.wind_dir == 'South':
+                        self.wind = "S  at  " + self.wind_speed
+                    elif self.wind_dir == 'Southeast':
+                        self.wind = "SE  at  " + self.wind_speed
+                    elif self.wind_dir == 'Northwest':
+                        self.wind = "NW  at  " + self.wind_speed
+                    elif self.wind_dir == 'North':
+                        self.wind = "N  at  " + self.wind_speed
+                    elif self.wind_dir == 'Northeast':
+                        self.wind = "NE  at  " + self.wind_speed
+                    elif self.wind_dir == 'East':
+                        self.wind = "E  at  " + self.wind_speed
+                    elif self.wind_dir == 'West':
+                        self.wind = "W  at  " + self.wind_speed
+                    else:
+                        self.wind = "?  at  " + self.wind_speed
+            except(KeyError) as e:
+                print('Wind weather error:  ' + str(e)) #debug
+                logging.info('Wind weather error:  ' + str(e))
+                self.wind='0'
+                self.wind_speed = 0
+                self.wind_gust = 'Gust ER'
+                pass
 
-            
-            # pressure
-            self.pressure = self.weather['pressure_in'] 
-        except(KeyError) as e:
-            print('check_weather error:  ' + str(e)) #debug
-            logging.info('check_weather error:  ' + str(e))
-            pass
-        
-        
-    
+            try:
+                # Last updated
+                self.update = self.weather['observation_time']
+                self.update_list = list(self.update) # convert to list
+                self.update_list[:-12] = [] # slice list to show what we want
+                self.update_list[6:] = [] # slice list to show what we want
+                self.updated = "Updated: " + "".join(self.update_list) + 'AM' # join back to a string
+            except(KeyError) as e:
+                print('Update weather error:  ' + str(e)) #debug
+                logging.info('Update weather error:  ' + str(e))
+                self.update = "Updated: Error"
+                pass
+
+            try:
+                # dewpoint
+                self.dewpoint = str(round(float(self.weather['dewpoint_f'])))
+            except(KeyError) as e:
+                print('Dewpoint weather error:  ' + str(e)) #debug
+                logging.info('Dewpoint weather error:  ' + str(e))
+                self.dewpoint = "0"
+                pass
+
+            try:
+                # Humidity
+                self.humidity = self.weather['relative_humidity']
+            except(KeyError) as e:
+                print('Humidity weather error:  ' + str(e)) #debug
+                logging.info('Humidity check_weather error:  ' + str(e))
+                self.humidity = "0"
+                pass
+
+            try:
+                # Feels Like
+                self.windchill = self.weather['windchill_f']
+            except(KeyError) as e:
+                print('Windchill weather error:  ' + str(e)) #debug
+                logging.info('Windchill weather error:  ' + str(e))
+                self.windchill = "0"
+                pass
+
+            try:
+                # pressure
+                self.barometer_p = self.weather['pressure_in']
+            except(KeyError) as e:
+                print('Barometer weather error:  ' + str(e)) #debug
+                logging.info('Barometer weather error:  ' + str(e))
+                self.barometer_p = "0.0"
+                self.barometer_dir = "0.0"
+                pass
+
+
+
 
 if __name__ == "__main__":
-    app = Noaa()    
-
+    app = Noaa()
