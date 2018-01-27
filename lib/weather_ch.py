@@ -300,9 +300,9 @@ class WeatherCh():
         elif icon_code in ('32','34'): #Sunny,Fair(day)
             file_='sunny.png'
         elif icon_code in ('4','37','38','39','45','47'): #Thunderstorms
-            file_= 'thunderstorms_severe.png'
-        elif icon_code == '3': #Severe Thunderstorms
             file_= 'thunderstorms.png'
+        elif icon_code == '3': #Severe Thunderstorms
+            file_= 'thunderstorms_severe.png'
         else:
             file_='x.png'
             
