@@ -276,51 +276,37 @@ class WeatherCh():
             number = 65
 
         if icon_code in '0': #Tornado
-            filename = 'Images/{}/tornado.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='tornado.png'
         elif icon_code in ('5','6','7','8','9','10','11','12','17','18','35','40'): #rain
-            filename = 'Images/{}/rain.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='rain.png'
         elif icon_code in ('13','14','15','16','41','42','43','46'): #Snow
-            filename = 'Images/{}/snow.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='snow.png'
         elif icon_code in ('20','21'): #Foggy or Haze
-            filename = 'Images/{}/fog.png' .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='fog.png'
         elif icon_code in ('23','24'): # Windy
-            filename = 'Images/{}/wind.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='wind.png'
         elif icon_code == '25': #Cold
-            filename = 'Images/{}/cold.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='cold.png'
         elif icon_code == '36': #Hot
-            filename = 'Images/{}/hot.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='hot.png'
         elif icon_code in ('26','44'): #Cloudy
-            filename = 'Images/{}/cloudy.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_= 'cloudy.png'
         elif icon_code in ('27','29'): #Mostly Cloudy(Night)
-            filename = 'Images/{}/cloudy_night.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='cloudy_night.png'
         elif icon_code in ('28','30'): #Mostly Cloudy(Day)
-            filename = 'Images/{}/cloudy_day.png' .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='cloudy_day.png'
         elif icon_code in ('31','33'): #Clear(Night),Fair(Night)
-            filename = 'Images/{}/clear_night.png' .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='clear_night.png'
         elif icon_code in ('32','34'): #Sunny,Fair(day)
-            filename = 'Images/{}/sunny.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_='sunny.png'
         elif icon_code in ('4','37','38','39','45','47'): #Thunderstorms
-            filename = 'Images/{}/thunderstorms.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_= 'thunderstorms_severe.png'
         elif icon_code == '3': #Severe Thunderstorms
-            filename = 'Images/{}/thunderstorms_severe.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
+            file_= 'thunderstorms.png'
         else:
-            filename = 'Images/{}/x.png'  .format(number)
-            icon = tk.PhotoImage(file=self.get_resource_path(filename))
-
+            file_='x.png'
+            
+        icon= tk.PhotoImage(file=self.get_resource_path('Images/{}/{}'.format(number,file_)))
         return(icon)
 
 
