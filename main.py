@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.1.3'
+    version = '2.1.4'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -323,13 +323,15 @@ class Main():
             self.database.create_table(cur, conn, args[1])
         else:
             print("Error! cannot create the database connection.")
-        self.database.add_row(cur, args[3], args[4], args[5], args[6], 
-            args[7], args[8], args[9], args[10])
-        #self.database.printDB(cur, conn, args[2])
+        if self.outdoor.status != 'Status ER':
+            self.database.add_row(cur, args[3], args[4], args[5], args[6], 
+                args[7], args[8], args[9], args[10])
+            print(self.outdoor.status)
+        else:
+            print("This didn't get sent to the database")
         self.database.close(conn)
 
     def write_high_db(self, *args):
-        #database_path = self.get_resource_path(args[0])
 
         # create a database connection
         conn, cur = self.database.create_connection(self.database_path)
@@ -337,11 +339,9 @@ class Main():
         self.database.create_table(cur, conn, args[1])
         self.database.add_row(cur, args[3], args[4], args[5], args[6], 
             args[7], args[8], args[9], args[10], args[11])
-        #self.database.printDB(cur, conn, args[2])
         self.database.close(conn)
 
     def write_low_db(self, *args):
-        #database_path = self.get_resource_path(args[0])
 
         # create a database connection
         conn, cur = self.database.create_connection(self.database_path)
@@ -349,7 +349,6 @@ class Main():
         self.database.create_table(cur, conn, args[1])
         self.database.add_row_low(cur, args[3], args[4], args[5], args[6], 
             args[7], args[8], args[9], args[10], args[11])
-        #self.database.printDB(cur, conn, args[2])
         self.database.close(conn)
 
     def read_past_db(self):
