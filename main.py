@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.1.4'
+    version = '2.1.5'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -326,7 +326,6 @@ class Main():
         if self.outdoor.status != 'Status ER':
             self.database.add_row(cur, args[3], args[4], args[5], args[6], 
                 args[7], args[8], args[9], args[10])
-            print(self.outdoor.status)
         else:
             print("This didn't get sent to the database")
         self.database.close(conn)
@@ -355,8 +354,8 @@ class Main():
         today = datetime.date.today()
         if self.now_date != today:
             conn, cur = self.database.create_connection(self.database_path)
-            high = self.database.high_temp(cur, conn)
-            low = self.database.low_temp(cur,conn)
+            high = self.database.past_temp(cur, conn,'high')
+            low = self.database.past_temp(cur,conn, 'low')
             self.now_date = datetime.date.today()
             try:
                 self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
@@ -371,8 +370,8 @@ class Main():
         self.database_path = self.get_resource_path('lib/weather.db')
         self.now_date = datetime.date.today()
         conn, cur = self.database.create_connection(self.database_path)
-        high = self.database.high_temp(cur, conn)
-        low = self.database.low_temp(cur, conn)
+        high = self.database.past_temp(cur, conn,'high')
+        low = self.database.past_temp(cur, conn,'low')
         #high = self.database.high_temp(cur,conn)
         try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high

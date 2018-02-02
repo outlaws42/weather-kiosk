@@ -165,8 +165,6 @@ class WeatherCh():
             # weather conditon codes
             self.forecast_0_day_code = self.weather['forecasts'][0]['day']['icon']
             self.forecast_0_night_code = self.weather['forecasts'][0]['night']['icon']
-            print(self.forecast_0_day_code)
-            print(self.forecast_0_night_code)
 
             # Precip %
             self.forecast_0_night_precip = self.weather['forecasts'][0]['night']['chance_precip'] + '%'
@@ -277,8 +275,10 @@ class WeatherCh():
 
         if icon_code in '0': #Tornado
             file_='tornado.png'
-        elif icon_code in ('5','6','7','8','9','10','11','12','17','18','35','40'): #rain
+        elif icon_code in ('9','10','11','12','17','18','35','40'): #rain
             file_='rain.png'
+        elif icon_code in ('5','6','7','8'): #rain/Snow
+            file_='sleet.png'
         elif icon_code in ('13','14','15','16','41','42','43','46'): #Snow
             file_='snow.png'
         elif icon_code in ('20','21'): #Foggy or Haze
@@ -299,10 +299,8 @@ class WeatherCh():
             file_='clear_night.png'
         elif icon_code in ('32','34'): #Sunny,Fair(day)
             file_='sunny.png'
-        elif icon_code in ('4','37','38','39','45','47'): #Thunderstorms
+        elif icon_code in ('3','4','37','38','39','45','47'): #Thunderstorms
             file_= 'thunderstorms.png'
-        elif icon_code == '3': #Severe Thunderstorms
-            file_= 'thunderstorms_severe.png'
         else:
             file_='x.png'
             

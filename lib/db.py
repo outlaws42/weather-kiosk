@@ -57,32 +57,18 @@ class Database():
             print(e)
             pass
 
-    def high_temp(self,cursor,conn):
+    def past_temp(self,cursor,conn,table ):
         cursor = conn.cursor()
 
         try:
-            results = cursor.execute("SELECT * from high where TDate =  DATE('now', 'localtime', '-1 day')" )
-            today = list(results)
-            if today:
-                high = today[0]
-                return high
+            results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime', '-1 day')".format(tb=table) )
+            past = list(results)
+            if past:
+                high_low = past[0]
+                return high_low
         except IndexError as e:
             print(e)
             pass
-
-    def low_temp(self,cursor,conn):
-        cursor = conn.cursor()
-
-        try:
-            results = cursor.execute("SELECT * from low where TDate =  DATE('now', 'localtime', '-1 day')" )
-            today = list(results)
-            if today:
-                low = today[0]
-                return low
-        except IndexError as e:
-            print(e)
-            pass
-
 
     def create_connection(self,db_file):
          """ Make connection to an SQLite database file """
@@ -127,7 +113,6 @@ class Database():
             if len(args) == 8:
                 cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
-
             else:
                 cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
                 "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))

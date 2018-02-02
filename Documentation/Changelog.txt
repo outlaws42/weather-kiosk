@@ -37,4 +37,8 @@ Intial stable release with seperate files for each outdoor service.
 * Added logic to not write to the database if no internet connection
 * Cleaned up some commented code.
 
+2.1.5 (2/2/2018)
+* combined getting how low temp into one function
+* More code cleanup
+
 
