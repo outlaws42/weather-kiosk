@@ -54,7 +54,7 @@ import lib.db as db
 
 
 class Main():
-    version = '2.1.5'
+    version = '2.1.6'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -213,18 +213,18 @@ class Main():
         if now >= today1130pm:
             conn, cur = self.database.create_connection(self.database_path)
             high_low = self.database.high_low_temp_today(cur, conn)
-            self.high = high_low[0]
-            self.low = high_low[1]
-            #self.high = self.database.high_temp_today(cur, conn)
+            high = high_low[0]
+            low = high_low[1]
             self.database.close(conn)
-            self.db_config_high()
-            self.db_config_low()
+            self.db_config_past('high',high)
+            self.db_config_past('low', low)
         else:
             pass
 
-    def db_config_high(self):
-        idr,con,tem,win,feel,dew,rel,bar,da,zi= self.high
-        create_table = """CREATE TABLE IF NOT EXISTS high(
+    def db_config_past(self, tablename, past):
+        idr,con,tem,win,feel,dew,rel,bar,da,zi= past
+        
+        create_table = "CREATE TABLE IF NOT EXISTS " + tablename + """ (
                                                             ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                                             Condition TEXT NOT NULL,
                                                             OTemp INTEGER NOT NULL,
@@ -239,7 +239,8 @@ class Main():
 
         prin = """SELECT ID, Condition, OTemp, WindSpeed,
                     FeelsLike, DewPoint, RelHumidity, Barometer,
-                    TDate, Zip FROM high """
+                    TDate, Zip FROM """ + tablename
+
         database_loc = 'lib/weather.db'
         condition = con
         otemp = tem
@@ -250,38 +251,7 @@ class Main():
         barometer = bar
         date_today= da
         zip_code = zi
-        self.write_high_db(database_loc,create_table,prin,condition,otemp, 
-            windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
-
-    def db_config_low(self):
-        idr,con,tem,win,feel,dew,rel,bar,da,zi= self.low
-        create_table = """CREATE TABLE IF NOT EXISTS low(
-                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                                            Condition TEXT NOT NULL,
-                                                            OTemp INTEGER NOT NULL,
-                                                            WindSpeed INTEGER NOT NULL,
-                                                            FeelsLike REAL,
-                                                            DewPoint REAL,
-                                                            RelHumidity REAL,
-                                                            Barometer REAL,
-                                                            TDate,
-                                                            Zip TEXT
-                                                    ); """
-
-        prin = """SELECT ID, Condition, OTemp, WindSpeed,
-                    FeelsLike, DewPoint, RelHumidity, Barometer,
-                    TDate, Zip FROM low """
-        database_loc = 'lib/weather.db'
-        condition = con
-        otemp = tem
-        windspeed = win
-        feelslike = feel
-        dewpoint = dew
-        relhumidity = rel
-        barometer = bar
-        date_today= da
-        zip_code = zi
-        self.write_low_db(database_loc,create_table,prin,condition,otemp, 
+        self.write_past_db(tablename,database_loc,create_table,prin,condition,otemp, 
             windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
 
     def db_config_wether(self):
@@ -324,29 +294,19 @@ class Main():
         else:
             print("Error! cannot create the database connection.")
         if self.outdoor.status != 'Status ER':
-            self.database.add_row(cur, args[3], args[4], args[5], args[6], 
+            self.database.add_row(cur, 'weather',args[3], args[4], args[5], args[6], 
                 args[7], args[8], args[9], args[10])
         else:
             print("This didn't get sent to the database")
         self.database.close(conn)
 
-    def write_high_db(self, *args):
+    def write_past_db(self, tablename, *args):
 
         # create a database connection
         conn, cur = self.database.create_connection(self.database_path)
         # create projects table
         self.database.create_table(cur, conn, args[1])
-        self.database.add_row(cur, args[3], args[4], args[5], args[6], 
-            args[7], args[8], args[9], args[10], args[11])
-        self.database.close(conn)
-
-    def write_low_db(self, *args):
-
-        # create a database connection
-        conn, cur = self.database.create_connection(self.database_path)
-        # create projects table
-        self.database.create_table(cur, conn, args[1])
-        self.database.add_row_low(cur, args[3], args[4], args[5], args[6], 
+        self.database.add_row(cur, tablename, args[3], args[4], args[5], args[6], 
             args[7], args[8], args[9], args[10], args[11])
         self.database.close(conn)
 
@@ -372,7 +332,6 @@ class Main():
         conn, cur = self.database.create_connection(self.database_path)
         high = self.database.past_temp(cur, conn,'high')
         low = self.database.past_temp(cur, conn,'low')
-        #high = self.database.high_temp(cur,conn)
         try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
             self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low

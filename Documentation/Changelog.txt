@@ -41,4 +41,8 @@ Intial stable release with seperate files for each outdoor service.
 * combined getting how low temp into one function
 * More code cleanup
 
+2.1.6 (2/3/2018)
+* Stream lined code for the database calls
+
+
 

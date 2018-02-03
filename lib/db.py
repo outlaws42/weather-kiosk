@@ -33,7 +33,6 @@ class Database():
     def high_low_temp_today(self,cursor,conn):
         cursor = conn.cursor()
         results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
-        #results = cursor.execute("SELECT * from weather where TDate =  '2017-12-127'" )
         try:
             today = list(results)
             high_low = sorted(today, key=itemgetter(2), reverse=True)
@@ -45,23 +44,13 @@ class Database():
             print(e)
             pass
 
-    def high_temp_today(self,cursor,conn):
-        cursor = conn.cursor()
-        results = cursor.execute("SELECT * from weather where TDate =  DATE('now', 'localtime')" )
-        try:
-            today = list(results)
-            high_low = sorted(today, key=itemgetter(2), reverse=True)
-            high = high_low[0]
-            return high
-        except IndexError as e:
-            print(e)
-            pass
 
     def past_temp(self,cursor,conn,table ):
         cursor = conn.cursor()
 
         try:
-            results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime', '-1 day')".format(tb=table) )
+            results = cursor.execute(
+            "SELECT * from {tb} where TDate =  DATE('now', 'localtime', '-1 day')".format(tb=table) )
             past = list(results)
             if past:
                 high_low = past[0]
@@ -108,29 +97,20 @@ class Database():
         cursor.execute('PRAGMA TABLE_INFO({})'.format(table_name))
         names = [tup[1] for tup in cursor.fetchall()]
 
-    def add_row(self, cursor, *args):
+    def add_row(self, cursor, tablename, *args):
         try:
             if len(args) == 8:
-                cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-                "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
+                cursor.execute("INSERT INTO " + tablename + 
+                " (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",
+                (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
             else:
-                cursor.execute("INSERT INTO high (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-                "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
+                cursor.execute("INSERT INTO " + tablename + 
+                " (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
+                "VALUES (?,?,?,?,?,?,?,?,?);",
+                (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
         except sqlite3.OperationalError as e:
             print(e)
-
-
-    def add_row_low(self, cursor, *args):
-        try:
-            if len(args) == 8:
-                cursor.execute("INSERT INTO weather (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-                "VALUES (?,?,?,?,?,?,?,DATE('now', 'localtime'),?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]))
-            else:
-                cursor.execute("INSERT INTO low (Condition, OTemp, WindSpeed, FeelsLike, DewPoint, RelHumidity, Barometer, TDate, Zip)"
-                "VALUES (?,?,?,?,?,?,?,?,?);",(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]))
-        except sqlite3.OperationalError as e:
-            print(e)
-
                 
     def delete_table(cursor,conn,table_name):
         """ You can delete a table if it exists like this """
