@@ -49,7 +49,7 @@ import lib.indoor as indr
 #import lib.owm as ow
 import lib.noaa as no
 import lib.weather_ch as wc
-import lib.db as db
+import lib.db as dp
 
 
 
@@ -98,7 +98,6 @@ class Main():
         else:
             self.outdoor = wc.WeatherCh()
         self.indoor = indr.Indoor()
-        self.database = db.Database()
         self.intial_past_db()
         # Call refresh of data
         self.refresh_info()
@@ -211,11 +210,11 @@ class Main():
         now = datetime.datetime.now()
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
         if now >= today1130pm:
-            conn, cur = self.database.create_connection(self.database_path)
-            high_low = self.database.high_low_temp_today(cur, conn)
+            conn, cur = dp.create_connection(self.database_path)
+            high_low = dp.high_low_temp_today(cur, conn)
             high = high_low[0]
             low = high_low[1]
-            self.database.close(conn)
+            dp.close(conn)
             self.db_config_past('high',high)
             self.db_config_past('low', low)
         else:
@@ -287,35 +286,35 @@ class Main():
         #self.database_path = self.get_resource_path(args[0])
 
         # create a database connection
-        conn, cur = self.database.create_connection(self.database_path)
+        conn, cur = dp.create_connection(self.database_path)
         if conn is not None:
             # create projects table
-            self.database.create_table(cur, conn, args[1])
+            dp.create_table(cur, conn, args[1])
         else:
             print("Error! cannot create the database connection.")
         if self.outdoor.status != 'Status ER':
-            self.database.add_row(cur, 'weather',args[3], args[4], args[5], args[6], 
+            dp.add_row(cur, 'weather',args[3], args[4], args[5], args[6], 
                 args[7], args[8], args[9], args[10])
         else:
             print("This didn't get sent to the database")
-        self.database.close(conn)
+        dp.close(conn)
 
     def write_past_db(self, tablename, *args):
 
         # create a database connection
-        conn, cur = self.database.create_connection(self.database_path)
+        conn, cur = dp.create_connection(self.database_path)
         # create projects table
-        self.database.create_table(cur, conn, args[1])
-        self.database.add_row(cur, tablename, args[3], args[4], args[5], args[6], 
+        dp.create_table(cur, conn, args[1])
+        dp.add_row(cur, tablename, args[3], args[4], args[5], args[6], 
             args[7], args[8], args[9], args[10], args[11])
-        self.database.close(conn)
+        dp.close(conn)
 
     def read_past_db(self):
         today = datetime.date.today()
         if self.now_date != today:
-            conn, cur = self.database.create_connection(self.database_path)
-            high = self.database.past_temp(cur, conn,'high')
-            low = self.database.past_temp(cur,conn, 'low')
+            conn, cur = dp.create_connection(self.database_path)
+            high = dp.past_temp(cur, conn,'high')
+            low = dp.past_temp(cur,conn, 'low')
             self.now_date = datetime.date.today()
             try:
                 self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
@@ -329,9 +328,9 @@ class Main():
     def intial_past_db(self):
         self.database_path = self.get_resource_path('lib/weather.db')
         self.now_date = datetime.date.today()
-        conn, cur = self.database.create_connection(self.database_path)
-        high = self.database.past_temp(cur, conn,'high')
-        low = self.database.past_temp(cur, conn,'low')
+        conn, cur = dp.create_connection(self.database_path)
+        high = dp.past_temp(cur, conn,'high')
+        low = dp.past_temp(cur, conn,'low')
         try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
             self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
