@@ -44,5 +44,9 @@ Intial stable release with seperate files for each outdoor service.
 2.1.6 (2/3/2018)
 * Stream lined code for the database calls
 
+2.1.7 (2/14/2018)
+* changed weather icons. one icon for every code in the weather channel status list.
+* streamed lined code for icon selection  
+
 
 

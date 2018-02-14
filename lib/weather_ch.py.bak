@@ -265,10 +265,46 @@ class WeatherCh():
 
 
     def icon_select(self,icon_code):
-        try:
-            icon= tk.PhotoImage(file=self.get_resource_path('Images/65/num/{}.png'.format(icon_code)))
-        except:
-            icon = tk.PhotoImage(file=self.get_resource_path('Images/65/num/na.png'))
+        source = inspect.stack()[1][3]
+        if source == 'forcast':
+            number = 65
+        elif source == 'quit_button':
+            number = 45
+        else:
+            number = 65
+
+        if icon_code in '0': #Tornado
+            file_='tornado.png'
+        elif icon_code in ('9','10','11','12','17','35','40'): #rain
+            file_='rain.png'
+        elif icon_code in ('5','6','7','8','10','18'): #rain/Snow
+            file_='sleet.png'
+        elif icon_code in ('13','14','15','16','41','42','43','46'): #Snow
+            file_='snow.png'
+        elif icon_code in ('20','21'): #Foggy or Haze
+            file_='fog.png'
+        elif icon_code in ('23','24'): # Windy
+            file_='wind.png'
+        elif icon_code == '25': #Cold
+            file_='cold.png'
+        elif icon_code == '36': #Hot
+            file_='hot.png'
+        elif icon_code in ('26','44'): #Cloudy
+            file_= 'cloudy.png'
+        elif icon_code in ('27','29'): #Mostly Cloudy(Night)
+            file_='cloudy_night.png'
+        elif icon_code in ('28','30'): #Mostly Cloudy(Day)
+            file_='cloudy_day.png'
+        elif icon_code in ('31','33'): #Clear(Night),Fair(Night)
+            file_='clear_night.png'
+        elif icon_code in ('32','34'): #Sunny,Fair(day)
+            file_='sunny.png'
+        elif icon_code in ('3','4','37','38','39','45','47'): #Thunderstorms
+            file_= 'thunderstorms.png'
+        else:
+            file_='x.png'
+            
+        icon= tk.PhotoImage(file=self.get_resource_path('Images/{}/{}'.format(number,file_)))
         return(icon)
 
 

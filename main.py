@@ -54,7 +54,7 @@ import lib.db as dp
 
 
 class Main():
-    version = '2.1.6'
+    version = '2.1.7'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -724,6 +724,8 @@ class Main():
         # Quit button settings
         try:
             self.quit_image=self.outdoor.icon_select(self.outdoor.weather['current_conditions']['icon'])
+            #self.quit_image=self.outdoor.icon_select(17)
+            #print(self.outdoor.weather['current_conditions']['icon'])
         except:
             self.quit_image=tk.PhotoImage(file=self.get_resource_path("Images/45/sunny.png"))
         quitButton = tk.Button(self.f_outdoor_temp, bg=self.background,
