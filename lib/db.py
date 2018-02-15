@@ -5,6 +5,21 @@
 import sqlite3
 from operator import itemgetter
 
+def high_low_temp_today(cursor,conn,table):
+        cursor = conn.cursor()
+        results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime')".format(tb=table) )
+        #results = cursor.execute("SELECT * from {tb} where TDate =  '2018-02-14'".format(tb=table) )
+        try:
+            today = list(results)
+            high_low = sorted(today, key=itemgetter(2), reverse=True)
+            low_high = sorted(today, key=itemgetter(2))
+            high = high_low[0]
+            low = low_high[0]
+            return high, low
+        except IndexError as e:
+            print(e)
+            pass
+
 def past_temp(cursor,conn,table ):
     cursor = conn.cursor()
 
@@ -76,4 +91,5 @@ def delete_table(cursor,conn,table_name):
     """ You can delete a table if it exists like this """
     cursor.execute('DROP TABLE IF EXISTS {}'.format(table_name))
     conn.commit()
+    
 

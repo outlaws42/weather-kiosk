@@ -211,7 +211,7 @@ class Main():
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
         if now >= today1130pm:
             conn, cur = dp.create_connection(self.database_path)
-            high_low = dp.high_low_temp_today(cur, conn)
+            high_low = dp.high_low_temp_today(cur, conn,'weather')
             high = high_low[0]
             low = high_low[1]
             dp.close(conn)
