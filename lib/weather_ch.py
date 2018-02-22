@@ -79,7 +79,7 @@ class WeatherCh():
         except(KeyError) as e:
             print('Update weather error:  ' + str(e)) #debug
             logging.info('Update weather error:  ' + str(e))
-            self.update = "Updated: Error"
+            self.updated = "Updated: Error"
             pass
 
         try:
