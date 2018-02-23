@@ -34,7 +34,7 @@ class WeatherCh():
         try:    # left weather info
             # brief discription of the weather
             self.status =self.weather['current_conditions']['text']
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('Status weather error:  ' + str(e)) #debug
             logging.info('Status weather error:  ' + str(e))
             self.status = 'Status ER'
@@ -43,7 +43,7 @@ class WeatherCh():
         try:
             # outside temp .
             self.outdoor_temp = self.weather['current_conditions']['temperature']
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('Outdoor temp weather error:  ' + str(e)) #debug
             logging.info('Outdoor temp weather error:  ' + str(e))
             self.outdoor_temp = '0'
@@ -60,7 +60,7 @@ class WeatherCh():
                 self.wind = self.wind_dir + "  at  " + self.weather['current_conditions']['wind']['speed']
                 self.wind_speed = self.weather['current_conditions']['wind']['speed']
             self.wind_gust =  self.weather['current_conditions']['wind']['gust']
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
             self.wind='0'
@@ -76,7 +76,7 @@ class WeatherCh():
             self.update_list[9:-12] = [] # slice list to show what we want
             self.update_list[18:] = [] # slice list to show what we want
             self.updated ="".join(self.update_list) # join back to a string
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('Update weather error:  ' + str(e)) #debug
             logging.info('Update weather error:  ' + str(e))
             self.updated = "Updated: Error"
@@ -85,7 +85,7 @@ class WeatherCh():
         try:
             # dewpoint
             self.dewpoint = self.weather['current_conditions']['dewpoint']
-        except(KeyError) as e:
+        except(KeyError, ValueError) as e:
             print('Dewpoint weather error:  ' + str(e)) #debug
             logging.info('Dewpoint weather error:  ' + str(e))
             self.dewpoint = "0"
@@ -94,7 +94,7 @@ class WeatherCh():
         try:
             # Humidity
             self.humidity = self.weather['current_conditions']['humidity']
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('Humidity weather error:  ' + str(e)) #debug
             logging.info('Humidity check_weather error:  ' + str(e))
             self.humidity = "0"
@@ -103,16 +103,20 @@ class WeatherCh():
         try:
             # Feels Like
             self.windchill = self.weather['current_conditions']['feels_like']
-        except(KeyError) as e:
+            if self.windchill == '':
+                self.windchill = self.outdoor_temp
+            else:
+                self.windchill = self.weather['current_conditions']['feels_like']
+        except(KeyError,ValueError) as e:
+            self.windchill = "0"
             print('Windchill weather error:  ' + str(e)) #debug
             logging.info('Windchill weather error:  ' + str(e))
-            self.windchill = "0"
             pass
 
         try:
             # uv index
             self.uv =  self.weather['current_conditions']['uv']['text']
-        except(KeyError) as e:
+        except(KeyError,ValueError) as e:
             print('UV weather error:  ' + str(e)) #debug
             logging.info('UV weather error:  ' + str(e))
             self.uv = "UV ER"

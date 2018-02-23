@@ -48,5 +48,9 @@ Intial stable release with seperate files for each outdoor service.
 * changed weather icons. one icon for every code in the weather channel status list.
 * streamed lined code for icon selection  
 
+2.1.8 (2/23/2018)
+* Fixed if windchill is empty.
+ 
+
 
 
