@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Weather
+Comment=Displays weather info
+Icon=/usr/share/pixmaps/weather.png
+Exec=/home/pi/Weather/main.py
+Terminal=false
+Categories=Other;
