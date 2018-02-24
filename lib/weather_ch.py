@@ -48,9 +48,10 @@ class WeatherCh():
             logging.info('Outdoor temp weather error:  ' + str(e))
             self.outdoor_temp = '0'
             pass
-
+        self.current_icon = self.icon_select(self.weather['current_conditions']['icon'])
+        
         try:
-            # write weather info
+            # right weather info
             # wind
             self.wind_dir = self.weather['current_conditions']['wind']['text']
             if self.wind_dir == 'CALM':
@@ -270,9 +271,9 @@ class WeatherCh():
 
     def icon_select(self,icon_code):
         try:
-            icon= tk.PhotoImage(file=self.get_resource_path('Images/65/num/{}.png'.format(icon_code)))
+            icon= tk.PhotoImage(file=self.get_resource_path('Images/65/{}.png'.format(icon_code)))
         except:
-            icon = tk.PhotoImage(file=self.get_resource_path('Images/65/num/na.png'))
+            icon = tk.PhotoImage(file=self.get_resource_path('Images/65/na.png'))
         return(icon)
 
 

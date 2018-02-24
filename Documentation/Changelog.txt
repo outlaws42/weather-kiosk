@@ -50,6 +50,10 @@ Intial stable release with seperate files for each outdoor service.
 
 2.1.8 (2/23/2018)
 * Fixed if windchill is empty.
+
+2.1.9 (2/24/2018)
+* Made quit button get icon just like forcast.
+* Removed num dir for icons
  
 
 
