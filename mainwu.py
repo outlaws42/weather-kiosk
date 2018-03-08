@@ -46,16 +46,13 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 # user libraries
 import lib.indoor as indr
-#import lib.owm as ow
-import lib.noaa as no
-#import lib.weather_ch as wc
 import lib.wu as wu
 import lib.db as dp
 
 
 
 class Main():
-    version = '2.1.9'
+    version = '2.1.10'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'
@@ -92,16 +89,11 @@ class Main():
         self.frame0.grid(column='0',row='0',sticky="ew")
 
         # create and instance of the external classes
-        if self.service == 'noaa':
-            self.outdoor = no.Noaa()
-        elif self.service == 'owm':
-            self.outdoor = ow.Owm()
-        elif self.service == 'wu':
-            self.outdoor = wu.Wu()
-        else:
-            self.outdoor = wc.WeatherCh()
+        self.outdoor = wu.Wu()
         self.indoor = indr.Indoor()
+        
         self.intial_past_db()
+        
         # Call refresh of data
         self.refresh_info()
 
@@ -143,6 +135,7 @@ class Main():
         now = datetime.datetime.now()
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
         if now >= today1130pm:
+            print('Getting High Low')
             conn, cur = dp.create_connection(self.database_path)
             high_low = dp.high_low_temp_today(cur, conn,'weather')
             high = high_low[0]

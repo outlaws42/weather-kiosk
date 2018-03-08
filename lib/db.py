@@ -8,7 +8,7 @@ from operator import itemgetter
 def high_low_temp_today(cursor,conn,table):
         cursor = conn.cursor()
         results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime')".format(tb=table) )
-        #results = cursor.execute("SELECT * from {tb} where TDate =  '2018-02-14'".format(tb=table) )
+        #results = cursor.execute("SELECT * from {tb} where TDate =  '2018-03-03'".format(tb=table) )
         try:
             today = list(results)
             high_low = sorted(today, key=itemgetter(2), reverse=True)

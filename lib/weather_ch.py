@@ -5,10 +5,11 @@ import os
 import sys
 import tkinter as tk
 import configparser
-import pywapi
+import lib.pywapi as pywapi
+import lib.tmod as tmod
 import logging
 import inspect
-logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='weatherch.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
@@ -24,8 +25,19 @@ class WeatherCh():
         return abs_path_to_resource
 
     def get_weather_info(self):
-        self.weather = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
-
+        try:
+            if self.api == 'yes':
+                weather = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
+                tmod.save_pickle('weatherch.cm',weather,'home')
+                self.weather = tmod.open_pickle('weatherch.cm','home')
+                self.warning = ''
+            else:
+                self.weather = tmod.open_pickle('weatherch.cm','home')
+                self.warning = 'Using Saved Data'
+        except:
+           self.weather = tmod.open_pickle('weatherch.cm','home') 
+           self.warning = 'Using Saved Data'
+           pass
     def gleen_info(self):
 
         # weather service

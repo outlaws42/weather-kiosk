@@ -55,7 +55,7 @@ import lib.db as dp
 
 
 class Main():
-    version = '2.1.9'
+    version = '2.1.10'
     software = 'Weather Kiosk'
     #Set Degree special character
     degree_sign= '\N{DEGREE SIGN}'

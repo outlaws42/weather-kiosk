@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 import os
 import tkinter as tk
-import pywapi
+import lib.pywapi as pywapi
 import logging
 logging.basicConfig(filename='noaa.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 

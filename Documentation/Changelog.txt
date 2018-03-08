@@ -55,6 +55,12 @@ Intial stable release with seperate files for each outdoor service.
 * Made quit button get icon just like forcast.
 * Removed num dir for icons
  
+ 2.1.10 (3/08/2018)
+* Added weather underground.
+* Removed open weather map
+* Removed noaa
+* reorginized file structure
+ 
 
 
 

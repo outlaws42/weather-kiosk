@@ -8,9 +8,9 @@ import base64
 import tkinter as tk
 import logging
 import requests
-import tmod
-import pywapi
-from settings import key
+import lib.tmod as tmod
+import lib.pywapi as pywapi
+from lib.settings import key
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
@@ -48,6 +48,7 @@ class Wu():
            self.weather = tmod.open_pickle('weather.cm','home')
            self.weatherch = tmod.open_pickle('weatherch.cm','home') 
            self.warning = 'Using Saved Data'
+           pass
 
     def gleen_info(self):
         # weather service

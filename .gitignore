@@ -6,4 +6,5 @@ __pycache__/
 *.db
 *.sql
 settings.py
+getpastdb.py
 
