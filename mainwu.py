@@ -48,21 +48,20 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 import lib.indoor as indr
 import lib.wu as wu
 import lib.db as dp
-
+import lib.tmod as tmod
 
 
 class Main():
-    version = '2.1.10'
+    version = '2.1.11'
     software = 'Weather Kiosk'
-    #Set Degree special character
-    degree_sign= '\N{DEGREE SIGN}'
+    degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
     foreground = "white"
     color_1 = "medium sea green" # NA
     color_2 = "yellow"  # status.
     color_3 = "deepskyblue2" # minus
     color_4 = "red" # Indoor temp no sensor
-    font_ws = ("ubuntu",7,'bold')
+    font_ws = ("ubuntu",9,'bold')
     font_cat = ("ubuntu",13,'bold') # 11
     font_q = ("ubuntu",10,'bold')
     font_general = ("ubuntu",21,"bold") # 19
@@ -71,8 +70,6 @@ class Main():
     font_time = ("ubuntu",36,"bold") # 55
     refresh_type='1' # 1 = minutes 2 = Seconds
     refresh_rate_amount = 30
-    service = 'wu' # noaa = noaa weather, ch = Weather Channel
-
 
     if refresh_type =='1':
         refresh_rate =((refresh_rate_amount*60)*1000) # Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
@@ -108,22 +105,16 @@ class Main():
         self.root.mainloop()
 
 
-    def get_resource_path(self,rel_path):
-        dir_of_py_file = os.path.dirname(sys.argv[0])
-        rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
-        abs_path_to_resource = os.path.abspath(rel_path_to_resource)
-        return abs_path_to_resource
-
     def sign_plus(self):
         self.outdoor_temp = self.outdoor.outdoor_temp , self.degree_sign
         self.wind = self.outdoor.wind + ' mph '
         self.windchill = self.outdoor.windchill , self.degree_sign
-        self.barometer = self.outdoor.barometer_p + ' in'
+        self.precip = self.outdoor.precip + ' in'
         self.humidity = self.outdoor.humidity , '%'
         self.dewpoint = self.outdoor.dewpoint , self.degree_sign
         #self.visibility = self.outdoor.visibility + ' mi'
         self.weather_service = self.outdoor.weather_service + '/    ' + self.software + ' ' + self.version
-        self.past_temp = '{}{}/{}{}'.format(self.tempp,self.degree_sign,self.templ,self.degree_sign)
+        self.past_temp = '{}{} / {}{}'.format(self.tempp,self.degree_sign,self.templ,self.degree_sign)
 
     #############################################
     # Info calls                                #
@@ -173,11 +164,11 @@ class Main():
         feelslike = feel
         dewpoint = dew
         relhumidity = rel
-        barometer = bar
+        precip = bar
         date_today= da
         zip_code = zi
         self.write_past_db(tablename,database_loc,create_table,prin,condition,otemp, 
-            windspeed,feelslike,dewpoint,relhumidity,barometer,date_today,zip_code)
+            windspeed,feelslike,dewpoint,relhumidity,precip,date_today,zip_code)
 
     def db_config_wether(self):
         create_table = """CREATE TABLE IF NOT EXISTS weather(
@@ -203,13 +194,12 @@ class Main():
         feelslike = self.outdoor.windchill
         dewpoint = self.outdoor.dewpoint
         relhumidity = self.outdoor.humidity
-        barometer = self.outdoor.barometer_p
+        precip = self.outdoor.precip
         zip_code = self.outdoor.zip_code
         self.write_db(database_loc,create_table,prin,condition,otemp, 
-            windspeed,feelslike,dewpoint,relhumidity,barometer,zip_code)
+            windspeed,feelslike,dewpoint,relhumidity,precip,zip_code)
 
     def write_db(self, *args):
-        #self.database_path = self.get_resource_path(args[0])
 
         # create a database connection
         conn, cur = dp.create_connection(self.database_path)
@@ -252,7 +242,7 @@ class Main():
 
 
     def intial_past_db(self):
-        self.database_path = self.get_resource_path('lib/weather.db')
+        self.database_path = tmod.get_resource_path('lib/weather.db')
         self.now_date = datetime.date.today()
         conn, cur = dp.create_connection(self.database_path)
         high = dp.past_temp(cur, conn,'high')
@@ -436,7 +426,7 @@ class Main():
             self.refresh = "Refresh:  Date"
         refresh = tk.Label(self.f_top,fg=self.foreground,bg=self.background,
                 font=self.font_general,text=self.refresh)
-        refresh.grid(row='3',column='1',columnspan='3',sticky = 'w')
+        refresh.grid(row='3',column='1',columnspan='1',sticky = 'w')
 
     def display_indoor(self):
         try:
@@ -476,17 +466,9 @@ class Main():
 
 
     def display_outdoor(self):
-        # Outdoor Temp
-        outdoor_label = tk.Label(self.f_outdoor_temp,fg=self.foreground,
-            bg=self.background,font=self.font_general,text="Outdoor(F)")
-        outdoor_label.grid(row='0',column='1',pady=(0,0),padx=(0,70))
-        outdoor_temp = tk.Label(self.f_outdoor_temp,fg=self.foreground,
-            bg=self.background,font=self.font_temp,text=self.outdoor_temp) # noaa no sky conditon icon.
-        outdoor_temp.grid(row='1',column='0',rowspan='4',columnspan ='2',
-            padx=(0,80))
 
-
-        # weather status (Cloudy/Sunny  etc)
+        # Top center block
+        # Status, Past, Warning(Cloudy/Sunny  etc)
         status_text = tk.Label(self.f_top,fg=self.foreground,
             bg=self.background,font=self.font_hum,text='Current:')
         status_text.grid(row='1',column='1',sticky='w',pady=(0,0),padx=(0,0))
@@ -494,24 +476,28 @@ class Main():
             bg=self.background,font=self.font_hum,text=self.outdoor.status)
         status_info.grid(row='1',column='1',sticky='w',pady=(0,0),padx=(120,0))
         past_h_text = tk.Label(self.f_top,fg=self.foreground,
-            bg=self.background,font=self.font_hum,text='Yesterday H/L: ')
+            bg=self.background,font=self.font_hum,text='Yesterday\'s High / Low: ')
         past_h_text.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(0,0))
         past_h_info = tk.Label(self.f_top,fg=self.color_2,
             bg=self.background,font=self.font_hum,text=self.past_temp)
-        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(200,0))
+        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(315,0))
         if self.outdoor.warning:
             warning_info = tk.Label(self.f_top,fg=self.color_4,
                bg=self.background,font=self.font_cat,text=self.outdoor.warning)
-            warning_info.grid(row='2',column='3',sticky='w',pady=(0,0),padx=(30,0))
+            warning_info.grid(row='3',column='1',sticky='w',pady=(0,0),padx=(300,0))
         else:
           pass
-
-         # weather sevice indicator
-        service_text = tk.Label(self.lef_bottom,fg=self.foreground,
-            bg=self.background,font=self.font_ws,text=self.weather_service)
-        service_text.grid(row='4',column='1',columnspan='2', sticky='w',
-            pady=(0,5),padx=(0,5))
-
+        
+        # Middle Center
+          # Outdoor Temp
+        outdoor_label = tk.Label(self.f_outdoor_temp,fg=self.foreground,
+            bg=self.background,font=self.font_general,text="Outdoor(F)")
+        outdoor_label.grid(row='0',column='1',pady=(0,0),padx=(0,70))
+        outdoor_temp = tk.Label(self.f_outdoor_temp,fg=self.foreground,
+            bg=self.background,font=self.font_temp,text=self.outdoor_temp) 
+        outdoor_temp.grid(row='1',column='0',rowspan='4',columnspan ='2',
+            padx=(0,80))
+            
 
         # Side info settings
         # Wind settings
@@ -558,16 +544,17 @@ class Main():
             logging.info('display outdoor service,Dewpoint,windchill error:  ' + str(e))
             pass
         try:
-            # weather.com only
-            # Barometer settings
-            baro_label = tk.Label(self.f_uv,fg=self.foreground,
+            # Precip settings
+            precip_label = tk.Label(self.f_uv,fg=self.foreground,
                 bg=self.background,font=self.font_cat,text="Precip Today")
-            baro_label.grid(row='0',column='0',padx =(0,0))
-            baro = tk.Label(self.f_uv,fg=self.foreground,
-                bg=self.background,font=self.font_general,text=self.barometer)
-            baro.grid(row='1',column='0',pady=(0,0),padx=(0,5))
+            precip_label.grid(row='0',column='0',padx =(0,0))
+            precip = tk.Label(self.f_uv,fg=self.foreground,
+                bg=self.background,font=self.font_general,text=self.precip)
+            precip.grid(row='1',column='0',pady=(0,0),padx=(0,5))
             self.f_uv.grid_columnconfigure(0,weight='1')
-
+            
+            
+            # Bottom Center
             # Forcast settings
             days = self.outdoor.forecast_days()
             temps = self.outdoor.forecast_temp()
@@ -625,6 +612,13 @@ class Main():
             print('display outdoor Weather Ch only error:  ') #debug
             logging.info('display outdoor Weather Ch only error: ')
             pass
+            
+        # weather sevice indicator
+        service_text = tk.Label(self.lef_bottom,fg=self.foreground,
+            bg=self.background,font=self.font_ws,text=self.weather_service)
+        service_text.grid(row='4',column='1',columnspan='3', sticky='w',
+            pady=(0,5),padx=(0,5))
+
 
     def quit_button(self):
         # Quit button settings

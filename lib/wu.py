@@ -23,16 +23,10 @@ class Wu():
     def __init__(self):
         pass
 
-    def get_resource_path(self,rel_path):
-        dir_of_py_file = os.path.dirname(sys.argv[0])
-        rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
-        abs_path_to_resource = os.path.abspath(rel_path_to_resource)
-        return abs_path_to_resource
-
     def get_weather_info(self):
         try:
             if self.api == 'yes':
-                f = requests.get('http://api.wunderground.com/api/{}/forecast/conditions/q/pws:{}.json'.format(self.api_key,self.pws))
+                f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(self.api_key,self.pws))
                 weather = f.json()
                 weatherch = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
                 tmod.save_pickle('weather.cm',weather,'home')
@@ -53,14 +47,7 @@ class Wu():
     def gleen_info(self):
         # weather service
         self.weather_service = 'Provided by:  The Weather Underground'
-        now = datetime.datetime.now()
-        today7am = now.replace(hour=6, minute=59, second=0, microsecond=0)
-        today6pm = now.replace(hour=17, minute=59, second=0, microsecond=0)
-        if today7am <= now <= today6pm:
-            self.current_icon = self.icon_select(self.weather['current_observation']['icon'])
-        else:
-            self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
-
+        
         try:    # left weather info
             #brief discription of the weather
             self.status =self.weather['current_observation']['weather']
@@ -141,12 +128,12 @@ class Wu():
             pass
 
         try:
-            # barometer
-            self.barometer_p =  self.weather['current_observation']['precip_today_in']
+            # Precip Today
+            self.precip =  self.weather['current_observation']['precip_today_in']
         except(KeyError) as e:
             print('Barometer weather error:  ' + str(e)) #debug
             logging.info('Barometer weather error:  ' + str(e))
-            self.barometer_p = "0.0"
+            self.precip = "0.0"
             self.barometer_dir = "0.0"
             pass
 
@@ -160,16 +147,21 @@ class Wu():
             self.visibility = "0"
             pass
 
-        try:
             # sunrise/sunset
-            self.heat_index = self.weather['current_observation']['heat_index_f']
-        except(KeyError) as e:
-            print('Sunrise weather error:  ' + str(e)) #debug
-            logging.info('Sunrise weather error:  ' + str(e))
-            self.forcasts_0_sunrise = "Sunrise ER"
-            self.forcasts_0_sunset = "Sunset ER"
-            pass
-    
+        sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
+        sunrise_min =self.weather['sun_phase']['sunrise']['minute']
+        sunset_hour =self.weather['sun_phase']['sunset']['hour']
+        sunset_min =self.weather['sun_phase']['sunset']['minute']
+        
+        # Current Icon      
+        now = datetime.datetime.now()
+        morning = now.replace(hour=int(sunrise_hour), minute=int(sunrise_min), second=0, microsecond=0)
+        evening = now.replace(hour=int(sunset_hour), minute=int(sunset_min), second=0, microsecond=0)
+        if morning <= now <= evening:
+            self.current_icon = self.icon_select(self.weather['current_observation']['icon'])
+        else:
+            self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
+
     def forecast_days(self):
         # forecast day
         forecast_day = []
@@ -229,9 +221,9 @@ class Wu():
     def icon_select(self,icon_code):
         try:
 
-            icon= tk.PhotoImage(file=self.get_resource_path('Images/65/wu/{}.png'.format(icon_code)))
+            icon= tk.PhotoImage(file=tmod.get_resource_path('Images/65/wu/{}.png'.format(icon_code)))
         except:
-            icon = tk.PhotoImage(file=self.get_resource_path('Images/65/na.png'))
+            icon = tk.PhotoImage(file=tmod.get_resource_path('Images/65/na.png'))
         return(icon)
 
 

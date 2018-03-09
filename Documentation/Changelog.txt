@@ -60,6 +60,10 @@ Intial stable release with seperate files for each outdoor service.
 * Removed open weather map
 * Removed noaa
 * reorginized file structure
+
+2.1.11 (3/08/2018)
+* Changed top formating in Weather Underground.
+* set current icon day night by sunrise  sunset variables
  
 
 

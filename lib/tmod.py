@@ -139,15 +139,5 @@ def year_current():
     return current_year
     
 def time_now():
-    current =  datetime.datetime.now().time().strftime('%H:%M')
+    current =  datetime.datetime.now().time().strftime('%H:%M:%S')
     return current
-
-def test_functions():
-    year_now = year_current()
-    birth = day_diff(1,29,year_now)
-    print("Cara's birthday is in {} days".format(birth))
-    now = time_now()
-    print(now)
-
-
-#test_functions()
