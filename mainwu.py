@@ -33,11 +33,8 @@ need to compile pigpio
 Files in main dir: DHT22.py, main.py
 Libraries in lib dir: indoor.py, noaa.py, owm.py weather_ch.py
 """
-import configparser
 import datetime
 import logging
-import os
-import sys
 import time
 import tkinter as tk
 
@@ -52,7 +49,7 @@ import lib.tmod as tmod
 
 
 class Main():
-    version = '2.1.11'
+    version = '2.1.12'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -112,7 +109,6 @@ class Main():
         self.precip = self.outdoor.precip + ' in'
         self.humidity = self.outdoor.humidity , '%'
         self.dewpoint = self.outdoor.dewpoint , self.degree_sign
-        #self.visibility = self.outdoor.visibility + ' mi'
         self.weather_service = self.outdoor.weather_service + '/    ' + self.software + ' ' + self.version
         self.past_temp = '{}{} / {}{}'.format(self.tempp,self.degree_sign,self.templ,self.degree_sign)
 
@@ -560,14 +556,15 @@ class Main():
             temps = self.outdoor.forecast_temp()
             precip_day = self.outdoor.forecast_precip_day()
             precip_night = self.outdoor.forecast_precip_night()
+            now_morn_eve = self.outdoor.day_night()
+            now, morning, evening = now_morn_eve
                         
             # Day current
             forecast_0_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[0])
             forecast_0_day.grid(row='1',column='1',padx=(0,30),pady=(0,0))
-            now = datetime.datetime.now()
-            today4pm = now.replace(hour=17, minute=59, second=0, microsecond=0)
-            if now <= today4pm:
+
+            if morning <= now <= evening:
                 forecast_0_icon = tk.Label(self.lef_bottom,fg=self.foreground,
                     bg=self.background,font=self.font_general,image=self.outdoor.forecast_0_day_icon)
                 forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,

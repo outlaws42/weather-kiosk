@@ -17,7 +17,7 @@ class Wu():
     degree_sign= '\N{DEGREE SIGN}'
     zip_code = '46764'
     pws = 'KINLARWI5'
-    api = 'yes'  # yes = use api, no = don't use api
+    api = 'no'  # yes = use api, no = don't use api
     api_key = key
 
     def __init__(self):
@@ -108,23 +108,10 @@ class Wu():
         try:
             # Feels Like
             self.windchill = self.weather['current_observation']['feelslike_f']
-            if self.windchill == '':
-                self.windchill = self.outdoor_temp
-            else:
-                self.windchill = self.weather['current_observation']['feelslike_f']
         except(KeyError,ValueError) as e:
             self.windchill = "0"
             print('Windchill weather error:  ' + str(e)) #debug
             logging.info('Windchill weather error:  ' + str(e))
-            pass
-
-        try:
-            # uv index
-            self.uv =  self.weather['current_observation']['uv']
-        except(KeyError,ValueError) as e:
-            print('UV weather error:  ' + str(e)) #debug
-            logging.info('UV weather error:  ' + str(e))
-            self.uv = "UV ER"
             pass
 
         try:
@@ -146,22 +133,27 @@ class Wu():
             logging.info('Visibility weather error:  ' + str(e))
             self.visibility = "0"
             pass
-
-            # sunrise/sunset
-        sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
-        sunrise_min =self.weather['sun_phase']['sunrise']['minute']
-        sunset_hour =self.weather['sun_phase']['sunset']['hour']
-        sunset_min =self.weather['sun_phase']['sunset']['minute']
         
         # Current Icon      
-        now = datetime.datetime.now()
-        morning = now.replace(hour=int(sunrise_hour), minute=int(sunrise_min), second=0, microsecond=0)
-        evening = now.replace(hour=int(sunset_hour), minute=int(sunset_min), second=0, microsecond=0)
+        now_morn_eve = self.day_night()
+        now, morning, evening = now_morn_eve
         if morning <= now <= evening:
             self.current_icon = self.icon_select(self.weather['current_observation']['icon'])
         else:
             self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
-
+    
+    def day_night(self):
+        sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
+        sunrise_min =self.weather['sun_phase']['sunrise']['minute']
+        sunset_hour =self.weather['sun_phase']['sunset']['hour']
+        sunset_min =self.weather['sun_phase']['sunset']['minute']
+        now = datetime.datetime.now()
+        morning = now.replace(hour=int(sunrise_hour), 
+            minute=int(sunrise_min), second=0, microsecond=0)
+        evening = now.replace(hour=int(sunset_hour), 
+            minute=int(sunset_min), second=0, microsecond=0)
+        return now, morning, evening
+        
     def forecast_days(self):
         # forecast day
         forecast_day = []
@@ -197,7 +189,6 @@ class Wu():
             temp = self.weatherch['forecasts'][i]['night']['chance_precip'] + '%'
             forecast_pr.append(temp)
         return forecast_pr
-        
     
     def forecast(self):
         
