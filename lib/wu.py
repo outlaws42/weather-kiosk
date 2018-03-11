@@ -1,22 +1,17 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-import os
-import sys
 import datetime
-import base64
 import tkinter as tk
 import logging
 import requests
 import lib.tmod as tmod
-import lib.pywapi as pywapi
-from lib.settings import key
+from lib.settings import key, pws
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
     degree_sign= '\N{DEGREE SIGN}'
-    zip_code = '46764'
-    pws = 'KINLARWI5'
+    pws = pws
     api = 'no'  # yes = use api, no = don't use api
     api_key = key
 
@@ -28,19 +23,14 @@ class Wu():
             if self.api == 'yes':
                 f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(self.api_key,self.pws))
                 weather = f.json()
-                weatherch = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
                 tmod.save_pickle('weather.cm',weather,'home')
-                tmod.save_pickle('weatherch.cm',weatherch,'home')
                 self.weather = tmod.open_pickle('weather.cm','home')
-                self.weatherch = tmod.open_pickle('weatherch.cm','home')
                 self.warning = ''
             else:
                 self.weather = tmod.open_pickle('weather.cm','home')
-                self.weatherch = tmod.open_pickle('weatherch.cm','home')
                 self.warning = 'Using Saved Data'
         except:
-           self.weather = tmod.open_pickle('weather.cm','home')
-           self.weatherch = tmod.open_pickle('weatherch.cm','home') 
+           self.weather = tmod.open_pickle('weather.cm','home') 
            self.warning = 'Using Saved Data'
            pass
 
@@ -155,14 +145,15 @@ class Wu():
         return now, morning, evening
         
     def forecast_days(self):
-        # forecast day
+        # forecast day for 3 days
         forecast_day = []
         for i in range(3):
             temp = self.weather['forecast']['simpleforecast']['forecastday'][i]['date']['weekday_short']
             forecast_day.append(temp)
         return forecast_day
         
-    def forecast_temp(self):    
+    def forecast_temp(self):
+        # forecast high / low temp for 3 days    
         forecast = []
         for i in range(3):
             temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit'],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low']['fahrenheit'],self.degree_sign)
@@ -170,6 +161,7 @@ class Wu():
         return forecast
     
     def forecast_code(self):
+        # forecast code is day / night key word starting at index 0 for 3 days
         forecast_day_code = []
         for i in range(6):
             temp = self.weather['forecast']['txt_forecast']['forecastday'][i]['icon']
@@ -177,19 +169,13 @@ class Wu():
         return forecast_day_code
         
     def forecast_precip_day(self):
+        # pop is day night chance of precip starting at index 0 for 3 days
         forecast_pr = []
-        for i in range(3):
-            temp = self.weatherch['forecasts'][i]['day']['chance_precip'] + '%'
+        for i in range(6):
+            temp = self.weather['forecast']['txt_forecast']['forecastday'][i]['pop'] + '%'
             forecast_pr.append(temp)
         return forecast_pr
-        
-    def forecast_precip_night(self):
-        forecast_pr = []
-        for i in range(3):
-            temp = self.weatherch['forecasts'][i]['night']['chance_precip'] + '%'
-            forecast_pr.append(temp)
-        return forecast_pr
-    
+
     def forecast(self):
         
         day_code = self.forecast_code()
@@ -211,7 +197,6 @@ class Wu():
 
     def icon_select(self,icon_code):
         try:
-
             icon= tk.PhotoImage(file=tmod.get_resource_path('Images/65/wu/{}.png'.format(icon_code)))
         except:
             icon = tk.PhotoImage(file=tmod.get_resource_path('Images/65/na.png'))

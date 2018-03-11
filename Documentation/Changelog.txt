@@ -68,6 +68,12 @@ Intial stable release with seperate files for each outdoor service.
 2.1.12 (3/10/2018)
 * set forecast day 0 icon day night by sunrise  sunset variables.
 
+2.1.13 (3/11/2018)
+* Changed forecast chance of precip to weather underground.
+* Fixed spacing on chance of precip
+* Moved the pws to the lib/settings.py
+* Moved the zip_code to the lib/settings.py 
+
  
 
 

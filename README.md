@@ -12,7 +12,7 @@ The reason for writing this program was for 2 reasons.
 
 ## Prerequisites
 
-requires: python 3, tkinter 8.6, pywapi, pyowm(only if you use pyowm)
+requires: python 3, tkinter 8.6
 
 For indoor temp sensor DHT22 the following need to be installed
 
@@ -53,10 +53,24 @@ main.py
 
 ```
 
-The weather channel is used by default and the one I use so it is the most up to date. It has the most info avaliable to you.
+The weather underground is used by default and the one I use so it is the most up to date. It has the most info avaliable to you.
     
- Note: The minimum that has to be install is python 3 and tkinter. pywapi is included in the repo. if you don't have a temp
+ Note: The minimum that has to be install is python 3 and tkinter. if you don't have a temp
     sensor for the indoor temp it will just insert a static number of 70 degrees.
+    
+## Raspbery Pi
+In the OS dir there is a file called weather.desktop to add a menu item as well as a image.
+Add the image to:
+```
+/usr/share/pixmaps/
+
+```
+
+Add the weather.desktop file to:
+```
+/usr/share/applications/
+
+```
 
 ## Author
 
