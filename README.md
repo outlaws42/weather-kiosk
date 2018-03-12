@@ -12,15 +12,30 @@ The reason for writing this program was for 2 reasons.
 
 ## Prerequisites
 
-requires: python 3, tkinter 8.6
+requires: python 3, tkinter 8.6, weather underground api key
 
 For indoor temp sensor DHT22 the following need to be installed
 
 pigpio, DHT22
 
+### settings.py
+You will need to create a file called settings.py in the lib dir. The zip code is only used to insert into the
+database. You can find the pws code for your area by going to https://www.wunderground.com/ and then search location 
+by zip code or city. click the change link, there will be a list of possible weather stations in your area with
+push pins on a map as well. In parenthesis will be the pws code. You can get a api key from https://www.wunderground.com/weather/api/ 
+```
+#! /usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+key = 'your_weather_underground_api_key'
+pws = 'pws_for_your_location'
+zip_code = 'your_zip_code'
+
+```
+
 ### Installing
 
-Run this from a terminal in the Dir you want.
+Run this from a terminal in the dir you want.
 
 ```
 git clone https://github.com/outlaws42/weather-kiosk.git
@@ -53,7 +68,7 @@ main.py
 
 ```
 
-The weather underground is used by default and the one I use so it is the most up to date. It has the most info avaliable to you.
+
     
  Note: The minimum that has to be install is python 3 and tkinter. if you don't have a temp
     sensor for the indoor temp it will just insert a static number of 70 degrees.

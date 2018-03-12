@@ -12,7 +12,7 @@ logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %
 class Wu():
     degree_sign= '\N{DEGREE SIGN}'
     pws = pws
-    api = 'no'  # yes = use api, no = don't use api
+    api = 'yes'  # yes = use api, no = don't use api
     api_key = key
 
     def __init__(self):
