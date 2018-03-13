@@ -12,7 +12,7 @@ logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %
 class Wu():
     degree_sign= '\N{DEGREE SIGN}'
     pws = pws
-    api = 'yes'  # yes = use api, no = don't use api
+    api = 'no'  # yes = use api, no = don't use api
     api_key = key
 
     def __init__(self):
@@ -63,11 +63,11 @@ class Wu():
             self.wind_dir = self.weather['current_observation']['wind_dir']
             self.wind_string = self.weather['current_observation']['wind_string']
             if self.wind_string == 'Calm':
-                self.wind = "0"
+                self.wind = "Calm"
                 self.wind_speed = 0
             else:
-                self.wind = self.wind_dir + "  at  " + str(self.weather['current_observation']['wind_mph'])
                 self.wind_speed = self.weather['current_observation']['wind_mph']
+                self.wind = '{} at {}mph'.format(self.wind_dir,str(round(self.wind_speed)))
             self.wind_gust =  self.weather['current_observation']['wind_gust_mph']
         except(KeyError,ValueError) as e:
             print('Wind weather error:  ' + str(e)) #debug
@@ -123,7 +123,7 @@ class Wu():
             logging.info('Visibility weather error:  ' + str(e))
             self.visibility = "0"
             pass
-        
+
         # Current Icon      
         now_morn_eve = self.day_night()
         now, morning, evening = now_morn_eve
@@ -158,6 +158,7 @@ class Wu():
         for i in range(3):
             temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit'],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low']['fahrenheit'],self.degree_sign)
             forecast.append(temp)
+        print(forecast)
         return forecast
     
     def forecast_code(self):

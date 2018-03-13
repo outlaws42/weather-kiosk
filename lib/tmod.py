@@ -96,6 +96,14 @@ def html_info(tag,url):
         print(final_status)
     return final_status
 
+def list_of_items(item,range_num):
+        # forecast high / low temp for 3 days    
+        list_ = []
+        for i in range(range_num):
+            temp = item
+            list_.append(temp)
+        return list_
+
 def dict_to_list(list_,dictionary_):
         # Convert dictionary to a list
         temp = []
