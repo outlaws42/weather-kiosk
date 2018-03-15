@@ -74,6 +74,11 @@ Intial stable release with seperate files for each outdoor service.
 * Moved the pws to the lib/settings.py
 * Moved the zip_code to the lib/settings.py 
 
+2.1.14 (3/15/2018)
+* Icon path into a variable in settings.
+* Put icon images directly in the 65 dir
+
+
  
 
 

@@ -50,7 +50,7 @@ from lib.settings import zip_code as code
 
 
 class Main():
-    version = '2.1.13'
+    version = '2.1.14'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -67,7 +67,7 @@ class Main():
     font_temp = ("ubuntu",55,"bold") # 55
     font_time = ("ubuntu",36,"bold") # 55
     refresh_type='1' # 1 = minutes 2 = Seconds
-    refresh_rate_amount = 15
+    refresh_rate_amount = 30
     
     if refresh_type =='1':
         refresh_rate =((refresh_rate_amount*60)*1000) # Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
@@ -79,7 +79,7 @@ class Main():
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        #self.root.overrideredirect(1) # Make the window borderless
+        self.root.overrideredirect(1) # Make the window borderless
         self.frame0 = tk.Frame(self.root,background=self.background)
         self.frame0.grid(column='0',row='0',sticky="ew")
 
@@ -579,7 +579,7 @@ class Main():
             forecast_0_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[0])
             forecast_0_temp.grid(row='3',column='1',padx=(0,20))
-            forecast_0_precip.grid(row='1',column='1',padx=(110,10),pady=(0,0))
+            forecast_0_precip.grid(row='1',column='1',padx=(100,10),pady=(0,0))
             # Day 1
             forecast_1_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[1] )
@@ -592,7 +592,7 @@ class Main():
             forecast_1_temp.grid(row='3',column='2',padx=(0,20))
             forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_cat,text=precip_day[2] )
-            forecast_1_precip.grid(row='1',column='2',padx=(110,10),pady=(0,0))
+            forecast_1_precip.grid(row='1',column='2',padx=(100,10),pady=(0,0))
             # Day 2
             forecast_2_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[2] )
@@ -605,7 +605,7 @@ class Main():
             forecast_2_temp.grid(row='3',column='3',padx=(0,0))
             forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_cat,text=precip_day[4] )
-            forecast_2_precip.grid(row='1',column='3',padx=(110,10),pady=(0,0))
+            forecast_2_precip.grid(row='1',column='3',padx=(100,10),pady=(0,0))
         except:
             print('display outdoor Weather Ch only error:  ') #debug
             logging.info('display outdoor Weather Ch only error: ')

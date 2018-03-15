@@ -6,14 +6,12 @@ import tkinter as tk
 import logging
 import requests
 import lib.tmod as tmod
-from lib.settings import key, pws
+from lib.settings import key, pws, icon_path
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
     degree_sign= '\N{DEGREE SIGN}'
-    pws = pws
-    api = 'no'  # yes = use api, no = don't use api
-    api_key = key
+    api = 'yes'  # yes = use api, no = don't use api
 
     def __init__(self):
         pass
@@ -21,7 +19,7 @@ class Wu():
     def get_weather_info(self):
         try:
             if self.api == 'yes':
-                f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(self.api_key,self.pws))
+                f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(key,pws))
                 weather = f.json()
                 tmod.save_pickle('weather.cm',weather,'home')
                 self.weather = tmod.open_pickle('weather.cm','home')
@@ -158,7 +156,6 @@ class Wu():
         for i in range(3):
             temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit'],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low']['fahrenheit'],self.degree_sign)
             forecast.append(temp)
-        print(forecast)
         return forecast
     
     def forecast_code(self):
@@ -198,9 +195,9 @@ class Wu():
 
     def icon_select(self,icon_code):
         try:
-            icon= tk.PhotoImage(file=tmod.get_resource_path('Images/65/wu/{}.png'.format(icon_code)))
+            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(icon_path,icon_code)))
         except:
-            icon = tk.PhotoImage(file=tmod.get_resource_path('Images/65/na.png'))
+            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(icon_path)))
         return(icon)
 
 

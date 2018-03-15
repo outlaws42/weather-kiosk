@@ -30,6 +30,7 @@ push pins on a map as well. In parenthesis will be the pws code. You can get a a
 key = 'your_weather_underground_api_key'
 pws = 'pws_for_your_location'
 zip_code = 'your_zip_code'
+icon_path = 'Images/65'
 
 ```
 
