@@ -6,19 +6,19 @@ import tkinter as tk
 import logging
 import requests
 import lib.tmod as tmod
-from lib.settings import key, pws, icon_path
+from lib.api import key
+from lib.settings import pws, icon_path, api, unit
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
     degree_sign= '\N{DEGREE SIGN}'
-    api = 'yes'  # yes = use api, no = don't use api
 
     def __init__(self):
         pass
 
     def get_weather_info(self):
         try:
-            if self.api == 'yes':
+            if api == 'yes':
                 f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(key,pws))
                 weather = f.json()
                 tmod.save_pickle('weather.cm',weather,'home')
@@ -31,10 +31,21 @@ class Wu():
            self.weather = tmod.open_pickle('weather.cm','home') 
            self.warning = 'Using Saved Data'
            pass
-
+        self.units_of_measure()
+    
+    def units_of_measure(self):
+        if unit == 'metric':
+            self.temp_measure = 'c' 
+            self.speed = 'kph'
+            self.measure = 'mm'
+        else:
+            self.temp_measure = 'f' 
+            self.speed = 'mph'
+            self.measure = 'in'
+        
     def gleen_info(self):
         # weather service
-        self.weather_service = 'Provided by:  The Weather Underground'
+        self.weather_service = 'Provided by:  Weather Underground'
         
         try:    # left weather info
             #brief discription of the weather
@@ -47,7 +58,7 @@ class Wu():
 
         try:
             # outside temp .
-            self.outdoor_temp = round(self.weather['current_observation']['temp_f'])
+            self.outdoor_temp = round(self.weather['current_observation']['temp_{}'.format(self.temp_measure)])
         except(KeyError,ValueError) as e:
             print('Outdoor temp weather error:  ' + str(e)) #debug
             logging.info('Outdoor temp weather error:  ' + str(e))
@@ -64,9 +75,9 @@ class Wu():
                 self.wind = "Calm"
                 self.wind_speed = 0
             else:
-                self.wind_speed = self.weather['current_observation']['wind_mph']
-                self.wind = '{} at {}mph'.format(self.wind_dir,str(round(self.wind_speed)))
-            self.wind_gust =  self.weather['current_observation']['wind_gust_mph']
+                self.wind_speed = self.weather['current_observation']['wind_{}'.format(self.speed)]
+                self.wind = '{} at {}{}'.format(self.wind_dir,str(round(self.wind_speed)),self.speed)
+            self.wind_gust =  self.weather['current_observation']['wind_gust_{}'.format(self.speed)]
         except(KeyError,ValueError) as e:
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
@@ -77,7 +88,7 @@ class Wu():
 
         try:
             # dewpoint
-            self.dewpoint = self.weather['current_observation']['dewpoint_f']
+            self.dewpoint = round(self.weather['current_observation']['dewpoint_{}'.format(self.temp_measure)])
         except(KeyError, ValueError) as e:
             print('Dewpoint weather error:  ' + str(e)) #debug
             logging.info('Dewpoint weather error:  ' + str(e))
@@ -95,7 +106,7 @@ class Wu():
 
         try:
             # Feels Like
-            self.windchill = self.weather['current_observation']['feelslike_f']
+            self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
         except(KeyError,ValueError) as e:
             self.windchill = "0"
             print('Windchill weather error:  ' + str(e)) #debug
@@ -104,22 +115,12 @@ class Wu():
 
         try:
             # Precip Today
-            self.precip =  self.weather['current_observation']['precip_today_in']
+            self.precip =  self.weather['current_observation']['precip_today_{}'.format(unit)]
         except(KeyError) as e:
             print('Barometer weather error:  ' + str(e)) #debug
             logging.info('Barometer weather error:  ' + str(e))
             self.precip = "0.0"
             self.barometer_dir = "0.0"
-            pass
-
-
-        try:
-            # visibility
-            self.visibility =  self.weather['current_observation']['visibility_mi']
-        except(KeyError) as e:
-            print('Visibility weather error:  ' + str(e)) #debug
-            logging.info('Visibility weather error:  ' + str(e))
-            self.visibility = "0"
             pass
 
         # Current Icon      
@@ -153,8 +154,13 @@ class Wu():
     def forecast_temp(self):
         # forecast high / low temp for 3 days    
         forecast = []
+        if self.temp_measure == 'c':
+            measure = 'celsius'
+        else:
+            measure = 'fahrenheit'
+        
         for i in range(3):
-            temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit'],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low']['fahrenheit'],self.degree_sign)
+            temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high'][measure],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low'][measure],self.degree_sign)
             forecast.append(temp)
         return forecast
     

@@ -18,11 +18,22 @@ For indoor temp sensor DHT22 the following need to be installed
 
 pigpio, DHT22
 
+### api.py
+You will need to create a file called api.py in the lib dir. You can get a api key from https://www.wunderground.com/weather/api/ 
+```
+#! /usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+key = 'your_weather_underground_api_key'
+
+```
+
 ### settings.py
-You will need to create a file called settings.py in the lib dir. The zip code is only used to insert into the
+ The zip code is only used to insert into the
 database. You can find the pws code for your area by going to https://www.wunderground.com/ and then search location 
 by zip code or city. click the change link, there will be a list of possible weather stations in your area with
 push pins on a map as well. In parenthesis will be the pws code. You can get a api key from https://www.wunderground.com/weather/api/ 
+
 ```
 #! /usr/bin/env python3
 
@@ -31,6 +42,9 @@ key = 'your_weather_underground_api_key'
 pws = 'pws_for_your_location'
 zip_code = 'your_zip_code'
 icon_path = 'Images/65'
+api = 'yes' # Yes = use the api(Production). no = don't use the api and get info from saved file(Development). 
+fullscreen = 'yes' # yes = fullscreen no = Windowed
+unit = 'in' # metric = Metric, in = Inch
 
 ```
 

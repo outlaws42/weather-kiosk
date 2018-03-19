@@ -47,10 +47,11 @@ import lib.wu as wu
 import lib.db as dp
 import lib.tmod as tmod
 from lib.settings import zip_code as code
+from lib.settings import fullscreen
 
 
 class Main():
-    version = '2.1.14'
+    version = '2.1.16'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -79,7 +80,10 @@ class Main():
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        self.root.overrideredirect(1) # Make the window borderless
+        if fullscreen == 'yes':
+            self.root.overrideredirect(1) # Make the window borderless
+        else:
+            pass
         self.frame0 = tk.Frame(self.root,background=self.background)
         self.frame0.grid(column='0',row='0',sticky="ew")
 
@@ -108,7 +112,7 @@ class Main():
         self.outdoor_temp = self.outdoor.outdoor_temp , self.degree_sign
         self.wind = self.outdoor.wind
         self.windchill = self.outdoor.windchill , self.degree_sign
-        self.precip = self.outdoor.precip + ' in'
+        self.precip = '{} {}'.format(self.outdoor.precip,self.outdoor.measure)
         self.humidity = self.outdoor.humidity , '%'
         self.dewpoint = self.outdoor.dewpoint , self.degree_sign
         self.weather_service = self.outdoor.weather_service + '/    ' + self.software + ' ' + self.version
@@ -138,24 +142,13 @@ class Main():
     def db_config_past(self, tablename, past):
         idr,con,tem,win,feel,dew,rel,bar,da,zi= past
         
-        create_table = "CREATE TABLE IF NOT EXISTS " + tablename + """ (
-                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                                            Condition TEXT NOT NULL,
-                                                            OTemp INTEGER NOT NULL,
-                                                            WindSpeed INTEGER NOT NULL,
-                                                            FeelsLike REAL,
-                                                            DewPoint REAL,
-                                                            RelHumidity REAL,
-                                                            Barometer REAL,
-                                                            TDate,
-                                                            Zip TEXT
-                                                    ); """
+        create_table = tablename 
 
         prin = """SELECT ID, Condition, OTemp, WindSpeed,
                     FeelsLike, DewPoint, RelHumidity, Barometer,
                     TDate, Zip FROM """ + tablename
 
-        database_loc = 'lib/weather.db'
+        database_loc = 'lib/past.db'
         condition = con
         otemp = tem
         windspeed = win
@@ -169,18 +162,7 @@ class Main():
             windspeed,feelslike,dewpoint,relhumidity,precip,date_today,zip_code)
 
     def db_config_wether(self):
-        create_table = """CREATE TABLE IF NOT EXISTS weather(
-                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                                            Condition TEXT NOT NULL,
-                                                            OTemp INTEGER NOT NULL,
-                                                            WindSpeed INTEGER NOT NULL,
-                                                            FeelsLike REAL,
-                                                            DewPoint REAL,
-                                                            RelHumidity REAL,
-                                                            Barometer REAL,
-                                                            TDate,
-                                                            Zip TEXT
-                                                    ); """
+        table = 'weather'
 
         prin = """SELECT ID, Condition, OTemp, WindSpeed,
                     FeelsLike, DewPoint, RelHumidity, Barometer,
@@ -194,7 +176,7 @@ class Main():
         relhumidity = self.outdoor.humidity
         precip = self.outdoor.precip
         zip_code = code
-        self.write_db(database_loc,create_table,prin,condition,otemp, 
+        self.write_db(database_loc,table,prin,condition,otemp, 
             windspeed,feelslike,dewpoint,relhumidity,precip,zip_code)
 
     def write_db(self, *args):
@@ -202,12 +184,13 @@ class Main():
         # create a database connection
         conn, cur = dp.create_connection(self.database_path)
         if conn is not None:
+            print(conn)
             # create projects table
             dp.create_table(cur, conn, args[1])
         else:
             print("Error! cannot create the database connection.")
         if self.outdoor.status != 'Status ER':
-            dp.add_row(cur, 'weather',args[3], args[4], args[5], args[6], 
+            dp.add_row(cur, args[1],args[3], args[4], args[5], args[6], 
                 args[7], args[8], args[9], args[10])
         else:
             print("This didn't get sent to the database")
@@ -218,7 +201,7 @@ class Main():
         # create a database connection
         conn, cur = dp.create_connection(self.database_path)
         # create projects table
-        dp.create_table(cur, conn, args[1])
+        dp.create_table(cur, conn, tablename)
         dp.add_row(cur, tablename, args[3], args[4], args[5], args[6], 
             args[7], args[8], args[9], args[10], args[11])
         dp.close(conn)
@@ -243,6 +226,14 @@ class Main():
         self.database_path = tmod.get_resource_path('lib/weather.db')
         self.now_date = datetime.date.today()
         conn, cur = dp.create_connection(self.database_path)
+        
+        if conn is not None:
+            print('this is conn: {}'.format(conn))
+            # create projects table
+            dp.create_table(cur, conn, 'high')
+            dp.create_table(cur, conn, 'low')
+        else:
+            pass
         high = dp.past_temp(cur, conn,'high')
         low = dp.past_temp(cur, conn,'low')
         try:
@@ -459,7 +450,7 @@ class Main():
 
         # Indoor Temp label
         indoor_label = tk.Label(self.f_indoor_temp,fg=self.foreground,
-            bg=self.background,font=self.font_general,text="Indoor(F)")
+            bg=self.background,font=self.font_general,text="Indoor({})".format(self.outdoor.temp_measure.upper()))
         indoor_label.grid(row='0',column='0', columnspan='2', padx=(50,50))
 
 
@@ -489,7 +480,7 @@ class Main():
         # Middle Center
           # Outdoor Temp
         outdoor_label = tk.Label(self.f_outdoor_temp,fg=self.foreground,
-            bg=self.background,font=self.font_general,text="Outdoor(F)")
+            bg=self.background,font=self.font_general,text="Outdoor({})".format(self.outdoor.temp_measure.upper()))
         outdoor_label.grid(row='0',column='1',pady=(0,0),padx=(0,70))
         outdoor_temp = tk.Label(self.f_outdoor_temp,fg=self.foreground,
             bg=self.background,font=self.font_temp,text=self.outdoor_temp) 

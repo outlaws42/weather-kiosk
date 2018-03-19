@@ -50,14 +50,25 @@ def close(conn):
     conn.commit()
     conn.close()
 
-def create_table(cursor, conn, create_table_sql):
+def create_table(cursor, conn, table):
     """ create a table from the create_table_sql statement
     :param conn: Connection object
     :param create_table_sql: a CREATE TABLE statement
     :return:
     """
     try:
-        cursor.execute(create_table_sql)
+        cursor.execute("""CREATE TABLE IF NOT EXISTS {tb}(
+                                                            ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                                            Condition TEXT NOT NULL,
+                                                            OTemp INTEGER NOT NULL,
+                                                            WindSpeed INTEGER NOT NULL,
+                                                            FeelsLike REAL,
+                                                            DewPoint REAL,
+                                                            RelHumidity REAL,
+                                                            Barometer REAL,
+                                                            TDate,
+                                                            Zip TEXT
+                                                    ); """.format(tb=table))
         conn.commit()
     except sqlite3.OperationalError as e:
         print(e)

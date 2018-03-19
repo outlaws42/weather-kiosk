@@ -78,6 +78,24 @@ Intial stable release with seperate files for each outdoor service.
 * Icon path into a variable in settings.
 * Put icon images directly in the 65 dir
 
+2.1.15 (3/16/2018)
+* Added a choice of Metric to settings.py.
+* Moved the api key to api.py
+
+2.1.16 (3/18/2018)
+* Added api variable to settings.py.
+* Put logic for the metric vs in in a function.
+* Update README.md to reflect the changes in settings.py and api.py
+* Put the change options in settings.py
+* It creates the DB's if there isn't one.
+
+** Want to do
+* Seperate database for temp collect and past?
+* Feels like temp round
+* Cleanup database calls
+
+
+
 
  
 

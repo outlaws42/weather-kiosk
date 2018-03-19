@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import time
+from lib.settings import unit
 try:
     import pigpio
     import DHT22
@@ -45,7 +46,10 @@ class Indoor():
             
             
             # Indoor temp
-            self.indoor_temp = self.inside_temp_f + '' + self.degree_sign
+            if unit == 'metric':
+                self.indoor_temp = '{} {}'.format(temp,self.degree_sign)
+            else:
+                self.indoor_temp = self.inside_temp_f + '' + self.degree_sign
             self.indoor_hum= round(float(self.inside_hum_d)),'%'
         except(NameError, AttributeError) as e:
             logging.info('No temp sensor found  ' + str(e))
