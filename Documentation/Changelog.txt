@@ -89,6 +89,9 @@ Intial stable release with seperate files for each outdoor service.
 * Put the change options in settings.py
 * It creates the DB's if there isn't one.
 
+2.1.17 (3/18/2018)
+
+
 ** Want to do
 * Seperate database for temp collect and past?
 * Feels like temp round
