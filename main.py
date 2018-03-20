@@ -51,7 +51,7 @@ from lib.settings import fullscreen
 
 
 class Main():
-    version = '2.1.16'
+    version = '2.1.17'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -134,40 +134,13 @@ class Main():
             high = high_low[0]
             low = high_low[1]
             dp.close(conn)
-            self.db_config_past('high',high)
-            self.db_config_past('low', low)
+            self.write_past_db('high',high)
+            self.write_past_db('low', low)
         else:
             pass
 
-    def db_config_past(self, tablename, past):
-        idr,con,tem,win,feel,dew,rel,bar,da,zi= past
-        
-        create_table = tablename 
-
-        prin = """SELECT ID, Condition, OTemp, WindSpeed,
-                    FeelsLike, DewPoint, RelHumidity, Barometer,
-                    TDate, Zip FROM """ + tablename
-
-        database_loc = 'lib/past.db'
-        condition = con
-        otemp = tem
-        windspeed = win
-        feelslike = feel
-        dewpoint = dew
-        relhumidity = rel
-        precip = bar
-        date_today= da
-        zip_code = zi
-        self.write_past_db(tablename,database_loc,create_table,prin,condition,otemp, 
-            windspeed,feelslike,dewpoint,relhumidity,precip,date_today,zip_code)
-
     def db_config_wether(self):
         table = 'weather'
-
-        prin = """SELECT ID, Condition, OTemp, WindSpeed,
-                    FeelsLike, DewPoint, RelHumidity, Barometer,
-                    TDate, Zip FROM weather """
-        database_loc = 'lib/weather.db'
         condition = self.outdoor.status
         otemp = self.outdoor.outdoor_temp
         windspeed = self.outdoor.wind_speed
@@ -176,34 +149,32 @@ class Main():
         relhumidity = self.outdoor.humidity
         precip = self.outdoor.precip
         zip_code = code
-        self.write_db(database_loc,table,prin,condition,otemp, 
+        self.write_db(table,condition,otemp, 
             windspeed,feelslike,dewpoint,relhumidity,precip,zip_code)
 
-    def write_db(self, *args):
+    def write_db(self, table, *args):
 
         # create a database connection
         conn, cur = dp.create_connection(self.database_path)
-        if conn is not None:
-            print(conn)
-            # create projects table
-            dp.create_table(cur, conn, args[1])
-        else:
-            print("Error! cannot create the database connection.")
+        
+        # create projects table
+        dp.create_table(cur, conn, table)
+        
         if self.outdoor.status != 'Status ER':
-            dp.add_row(cur, args[1],args[3], args[4], args[5], args[6], 
-                args[7], args[8], args[9], args[10])
+            dp.add_row(cur, table, args[0], args[1], args[2], args[3], 
+                args[4], args[5], args[6], args[7])
         else:
             print("This didn't get sent to the database")
         dp.close(conn)
-
-    def write_past_db(self, tablename, *args):
-
+    
+    def write_past_db(self, tablename, past):
+        id_,cond,temp,winspd,feels,dewpnt,relhum,precip,date,zip_= past
         # create a database connection
         conn, cur = dp.create_connection(self.database_path)
         # create projects table
         dp.create_table(cur, conn, tablename)
-        dp.add_row(cur, tablename, args[3], args[4], args[5], args[6], 
-            args[7], args[8], args[9], args[10], args[11])
+        dp.add_row(cur, tablename, cond, temp, winspd, feels, 
+            dewpnt, relhum, precip, date, zip_)
         dp.close(conn)
 
     def read_past_db(self):
@@ -227,13 +198,9 @@ class Main():
         self.now_date = datetime.date.today()
         conn, cur = dp.create_connection(self.database_path)
         
-        if conn is not None:
-            print('this is conn: {}'.format(conn))
-            # create projects table
-            dp.create_table(cur, conn, 'high')
-            dp.create_table(cur, conn, 'low')
-        else:
-            pass
+        # create projects table
+        dp.create_table(cur, conn, 'high')
+        dp.create_table(cur, conn, 'low')
         high = dp.past_temp(cur, conn,'high')
         low = dp.past_temp(cur, conn,'low')
         try:

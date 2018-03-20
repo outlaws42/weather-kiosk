@@ -106,7 +106,7 @@ class Wu():
 
         try:
             # Feels Like
-            self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
+            self.windchill = round(int(self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]))
         except(KeyError,ValueError) as e:
             self.windchill = "0"
             print('Windchill weather error:  ' + str(e)) #debug
