@@ -16,7 +16,7 @@ requires: python 3, tkinter 8.6, weather underground api key
 
 For indoor temp sensor DHT22 the following need to be installed
 
-pigpio, DHT22
+pigpio
 
 ### api.py
 You will need to create a file called api.py in the lib dir. You can get a api key from https://www.wunderground.com/weather/api/ 
@@ -48,13 +48,36 @@ unit = 'in' # metric = Metric, in = Inch
 
 ### Installing
 
-Run this from a terminal in the dir you want.
+Installing python 3 and pip on the raspberry pi.
+```
+sudo apt-get install python3 python3-pip
+
+```
+Run this from a terminal in the dir you want. to clone the repo to your local computer
 
 ```
 git clone https://github.com/outlaws42/weather-kiosk.git
 
-```
 
+```
+Then run this command to install the modules needed
+
+```
+pip3 install -r requirements.txt
+
+```
+Installing pigpio for reading the GPIO pins on the raspberry pi. Note this is not needed if you are not
+going to use the indoor temp sensor.
+```
+rm master.zip
+sudo rm -rf pigpio-master
+wget https://github.com/joan2937/pigpio/archive/master.zip
+unzip master.zip
+cd pigpio-master
+make
+sudo make install
+
+```
 pigpiod needs to be started at os start as root
 
 put the following line in sudo crontab -e
@@ -63,9 +86,6 @@ put the following line in sudo crontab -e
 @reboot              /usr/local/bin/pigpiod
 
 ```
-
-need to compile pigpio from source 
-
 
 You will have to make the python files executedable.
 
