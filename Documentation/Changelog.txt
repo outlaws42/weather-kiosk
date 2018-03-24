@@ -93,6 +93,11 @@ Intial stable release with seperate files for each outdoor service.
 * Cleanup database calls
 * Feels like temp round
 
+2.1.18 (3/24/2018)
+* Fix Feels like temp round so it doesn't error in certain situations.
+* condensed layout
+* make layout more centered in screen
+
 ** Want to do
 * Seperate database for temp collect and past?
 * switch icon set?

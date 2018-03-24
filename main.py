@@ -51,7 +51,7 @@ from lib.settings import fullscreen
 
 
 class Main():
-    version = '2.1.17'
+    version = '2.1.18'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -109,13 +109,13 @@ class Main():
 
 
     def sign_plus(self):
-        self.outdoor_temp = self.outdoor.outdoor_temp , self.degree_sign
+        self.outdoor_temp = '{}{}'.format(self.outdoor.outdoor_temp,self.degree_sign)
         self.wind = self.outdoor.wind
-        self.windchill = self.outdoor.windchill , self.degree_sign
+        self.windchill = '{}{}'.format(self.outdoor.windchill,self.degree_sign)
         self.precip = '{} {}'.format(self.outdoor.precip,self.outdoor.measure)
-        self.humidity = self.outdoor.humidity , '%'
-        self.dewpoint = self.outdoor.dewpoint , self.degree_sign
-        self.weather_service = self.outdoor.weather_service + '/    ' + self.software + ' ' + self.version
+        self.humidity = '{}%'.format(self.outdoor.humidity)
+        self.dewpoint = '{}{}'.format(self.outdoor.dewpoint,self.degree_sign)
+        self.weather_service = '{}/ {} {}'.format(self.outdoor.weather_service,self.software,self.version)
         self.past_temp = '{}{} / {}{}'.format(self.tempp,self.degree_sign,self.templ,self.degree_sign)
 
     #############################################
@@ -223,7 +223,7 @@ class Main():
             self.f_all = tk.Frame(self.frame0,border='2',relief='sunken',
                 background=self.background)
             self.f_all.grid(column='0',row='0',columnspan='2',rowspan='6', 
-                padx=(45,0),pady=(55,0),sticky="new") # 110,0 55,0
+                padx=(85,0),pady=(55,0),sticky="new") # 110,0 55,0
 
             # left container frame
             self.f_left = tk.Frame(self.f_all,background=self.background)
@@ -432,15 +432,15 @@ class Main():
             bg=self.background,font=self.font_hum,text=self.outdoor.status)
         status_info.grid(row='1',column='1',sticky='w',pady=(0,0),padx=(120,0))
         past_h_text = tk.Label(self.f_top,fg=self.foreground,
-            bg=self.background,font=self.font_hum,text='Yesterday\'s High / Low: ')
+            bg=self.background,font=self.font_hum,text='Yest\'s High/Low: ')
         past_h_text.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(0,0))
         past_h_info = tk.Label(self.f_top,fg=self.color_2,
             bg=self.background,font=self.font_hum,text=self.past_temp)
-        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(315,0))
+        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(230,0))
         if self.outdoor.warning:
             warning_info = tk.Label(self.f_top,fg=self.color_4,
                bg=self.background,font=self.font_cat,text=self.outdoor.warning)
-            warning_info.grid(row='3',column='1',sticky='w',pady=(0,0),padx=(300,0))
+            warning_info.grid(row='3',column='1',sticky='w',pady=(0,0),padx=(275,0))
         else:
           pass
         
@@ -448,7 +448,7 @@ class Main():
           # Outdoor Temp
         outdoor_label = tk.Label(self.f_outdoor_temp,fg=self.foreground,
             bg=self.background,font=self.font_general,text="Outdoor({})".format(self.outdoor.temp_measure.upper()))
-        outdoor_label.grid(row='0',column='1',pady=(0,0),padx=(0,70))
+        outdoor_label.grid(row='0',column='1',pady=(0,0),padx=(0,50))
         outdoor_temp = tk.Label(self.f_outdoor_temp,fg=self.foreground,
             bg=self.background,font=self.font_temp,text=self.outdoor_temp) 
         outdoor_temp.grid(row='1',column='0',rowspan='4',columnspan ='2',
@@ -533,28 +533,28 @@ class Main():
                     bg=self.background,font=self.font_general,image=self.outdoor.forecast_0_night_icon)
                 forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                    bg=self.background,font=self.font_cat,text=precip_day[1] )
-            forecast_0_icon.grid(row='2',column='1',padx=(0,20))
+            forecast_0_icon.grid(row='2',column='1',padx=(0,10))
             forecast_0_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[0])
-            forecast_0_temp.grid(row='3',column='1',padx=(0,20))
-            forecast_0_precip.grid(row='1',column='1',padx=(100,10),pady=(0,0))
+            forecast_0_temp.grid(row='3',column='1',padx=(0,10))
+            forecast_0_precip.grid(row='1',column='1',padx=(95,5),pady=(0,0))
             # Day 1
             forecast_1_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[1] )
-            forecast_1_day.grid(row='1',column='2',padx=(0,30))
+            forecast_1_day.grid(row='1',column='2',padx=(0,10))
             forecast_1_icon = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,image=self.outdoor.forecast_1_day_icon )
-            forecast_1_icon.grid(row='2',column='2',padx=(0,20))
+            forecast_1_icon.grid(row='2',column='2',padx=(0,10))
             forecast_1_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[1])
-            forecast_1_temp.grid(row='3',column='2',padx=(0,20))
+            forecast_1_temp.grid(row='3',column='2',padx=(0,10))
             forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_cat,text=precip_day[2] )
-            forecast_1_precip.grid(row='1',column='2',padx=(100,10),pady=(0,0))
+            forecast_1_precip.grid(row='1',column='2',padx=(95,5),pady=(0,0))
             # Day 2
             forecast_2_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[2] )
-            forecast_2_day.grid(row='1',column='3',padx=(0,30))
+            forecast_2_day.grid(row='1',column='3',padx=(0,0))
             forecast_2_icon = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,image=self.outdoor.forecast_2_day_icon )
             forecast_2_icon.grid(row='2',column='3')
@@ -563,7 +563,7 @@ class Main():
             forecast_2_temp.grid(row='3',column='3',padx=(0,0))
             forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_cat,text=precip_day[4] )
-            forecast_2_precip.grid(row='1',column='3',padx=(100,10),pady=(0,0))
+            forecast_2_precip.grid(row='1',column='3',padx=(95,0),pady=(0,0))
         except:
             print('display outdoor Weather Ch only error:  ') #debug
             logging.info('display outdoor Weather Ch only error: ')
@@ -583,8 +583,8 @@ class Main():
         quitButton = tk.Button(self.f_outdoor_temp, bg=self.background,
                     fg=self.color_3, highlightthickness = 0, bd = 0, font=self.font_q,
                     text = "X",command=self.root.quit)
-        quitButton.config(image=quit_image,width="70",height="55")
-        quitButton.grid(column='1',row='4',sticky='sw',pady=(0,5),padx=(150,40))
+        quitButton.config(image=quit_image,width="60",height="60")
+        quitButton.grid(column='1',row='4',sticky='sw',pady=(0,5),padx=(130,0))
 
 
 if __name__ == "__main__":
