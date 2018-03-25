@@ -48,9 +48,9 @@ unit = 'in' # metric = Metric, in = Inch
 
 ### Installing
 
-Installing python 3 and pip on the raspberry pi.
+Installing python 3, tkinter and pip on the raspberry pi.
 ```
-sudo apt-get install python3 python3-pip
+sudo apt-get install python3 python3-pip python3-tk
 
 ```
 Run this from a terminal in the dir you want. to clone the repo to your local computer
