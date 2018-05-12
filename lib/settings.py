@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-pws = 'KINLARWI5' # Weather station for your area. You can get this at https://www.wunderground.com/ 
+pws = 'KINLARWI12' # Weather station for your area. You can get this at https://www.wunderground.com/ 
 zip_code = '46764' # Your zip code. This is only used for the database.
 icon_path = 'Images/65' # Icon dir in relation to main.py
 api = 'no' # Yes = use the api(Production). no = don't use the api and get info from saved file(Development). 
