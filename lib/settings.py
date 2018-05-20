@@ -5,5 +5,5 @@ pws = 'KINLARWI12' # Weather station for your area. You can get this at https://
 zip_code = '46764' # Your zip code. This is only used for the database.
 icon_path = 'Images/65' # Icon dir in relation to main.py
 api = 'yes' # Yes = use the api(Production). no = don't use the api and get info from saved file(Development). 
-fullscreen = 'no' # yes = fullscreen no = Windowed
+fullscreen = 'yes' # yes = fullscreen no = Windowed
 unit = 'in' # metric = Metric, in = Inch
