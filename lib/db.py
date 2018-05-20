@@ -5,10 +5,26 @@
 import sqlite3
 from operator import itemgetter
 
-def high_low_temp_today(cursor,conn,table):
+def high_low_temp_today(cursor,conn,table,date_=None):
         cursor = conn.cursor()
-        results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime')".format(tb=table) )
-        #results = cursor.execute("SELECT * from {tb} where TDate =  '2018-03-03'".format(tb=table) )
+        if date_== None:
+            results = cursor.execute("SELECT * from {tb} where TDate =  DATE('now', 'localtime')".format(tb=table) )
+        else:
+            results = cursor.execute("SELECT * from {tb} where TDate = '{dt}'".format(tb=table,dt=date_))
+        try:
+            today = list(results)
+            high_low = sorted(today, key=itemgetter(2), reverse=True)
+            low_high = sorted(today, key=itemgetter(2))
+            high = high_low[0]
+            low = low_high[0]
+            return high, low
+        except IndexError as e:
+            print(e)
+            pass
+            
+def high_low_temp_past(cursor,conn,table, date_= None):
+        cursor = conn.cursor()
+        results = cursor.execute("SELECT * from {tb} where TDate = '{dt}'".format(tb=table,dt=date_))
         try:
             today = list(results)
             high_low = sorted(today, key=itemgetter(2), reverse=True)
@@ -102,5 +118,4 @@ def delete_table(cursor,conn,table_name):
     """ You can delete a table if it exists like this """
     cursor.execute('DROP TABLE IF EXISTS {}'.format(table_name))
     conn.commit()
-    
 

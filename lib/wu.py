@@ -107,8 +107,12 @@ class Wu():
         try:
             # Feels Like
             self.windchill = round(float(self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]))
+            print('This is float {}'.format(self.windchill))
+            #self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
+            #print('This int {}'.format(self.windchill))
         except(KeyError,ValueError) as e:
-            self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
+            self.windchill = self.outdoor_temp
+            print('This is outdoor temp {}'.format(self.windchill))
             print('Windchill weather error:  ' + str(e)) #debug
             logging.info('Windchill weather error:  ' + str(e))
             pass
