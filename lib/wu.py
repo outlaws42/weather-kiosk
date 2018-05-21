@@ -5,9 +5,10 @@ import datetime
 import tkinter as tk
 import logging
 import requests
+import lib.pywapi as pywapi
 import lib.tmod as tmod
 from lib.api import key
-from lib.settings import pws, icon_path, api, unit
+from lib.settings import pws, icon_path, api, unit, zip_code
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
@@ -28,7 +29,7 @@ class Wu():
                 self.weather = tmod.open_pickle('weather.cm','home')
                 self.warning = 'Using Saved Data'
         except:
-           self.weather = tmod.open_pickle('weather.cm','home') 
+           self.weather = tmod.open_pickle('weather.cm','home')
            self.warning = 'Using Saved Data'
            pass
         self.units_of_measure()
@@ -185,7 +186,6 @@ class Wu():
         return forecast_pr
 
     def forecast(self):
-        
         day_code = self.forecast_code()
         # day 0   
         # weather condition icon

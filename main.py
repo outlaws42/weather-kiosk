@@ -46,8 +46,9 @@ import lib.indoor as indr
 import lib.wu as wu
 import lib.db as dp
 import lib.tmod as tmod
+import lib.forecast as wc
 from lib.settings import zip_code as code
-from lib.settings import fullscreen
+from lib.settings import fullscreen, forecast_source
 
 
 class Main():
@@ -90,6 +91,7 @@ class Main():
         # create and instance of the external classes
 
         self.outdoor = wu.Wu()
+        self.forecastwc = wc.WeatherCh()
         self.indoor = indr.Indoor()
         
         self.intial_past_db()
@@ -307,12 +309,24 @@ class Main():
 
         # get weather info from the internet
         self.outdoor.get_weather_info()
+        if forecast_source == 2:
+            self.forecastwc.get_weather_info()
+        else:
+            pass
 
         # populate the weather info from the net.
         self.outdoor.gleen_info()
+        print('forecast_source = {}'.format(forecast_source))
         try:
-            self.outdoor.forecast()
-        except:
+            if forecast_source == 1:
+                
+                self.outdoor.forecast()
+                print('outdoor forecast()')
+            else:
+                self.forecastwc.forecast()
+                print('forecastwc forecast()')
+        except(Exception) as e:
+            print('This is the forecast call {}'.format(e))
             pass
 
         # write info
@@ -513,26 +527,50 @@ class Main():
             # Bottom Center
             # Forcast settings
             days = self.outdoor.forecast_days()
-            temps = self.outdoor.forecast_temp()
-            precip_day = self.outdoor.forecast_precip_day()
+            if forecast_source == 1:
+                temps = self.outdoor.forecast_temp()
+                precip_day = self.outdoor.forecast_precip_day()
+                
+            else:
+                temps = self.forecastwc.forecast_temp()
+                precip_day = self.forecastwc.forecast_precip_day('day')
+                precip_night = self.forecastwc.forecast_precip_day('night')
             now_morn_eve = self.outdoor.day_night()
             now, morning, evening = now_morn_eve
-                        
+            
+            #icons
+            if forecast_source == 1:
+                icon_day_0 = self.outdoor.forecast_0_day_icon
+                icon_night_0 = self.outdoor.forecast_0_night_icon
+                icon_day_1 = self.outdoor.forecast_1_day_icon
+                icon_day_2 = self.outdoor.forecast_2_day_icon
+            else:
+                icon_day_0 = self.forecastwc.forecast_0_day_icon
+                icon_night_0 = self.forecastwc.forecast_0_night_icon
+                icon_day_1 = self.forecastwc.forecast_1_day_icon
+                icon_day_2 = self.forecastwc.forecast_2_day_icon
+                       
             # Day current
             forecast_0_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[0])
             forecast_0_day.grid(row='1',column='1',padx=(0,30),pady=(0,0))
-
+                
             if morning <= now <= evening:
                 forecast_0_icon = tk.Label(self.lef_bottom,fg=self.foreground,
-                    bg=self.background,font=self.font_general,image=self.outdoor.forecast_0_day_icon)
+                    bg=self.background,font=self.font_general,image=icon_day_0)
                 forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                     bg=self.background,font=self.font_cat,text=precip_day[0] )
             else:
                 forecast_0_icon = tk.Label(self.lef_bottom,fg=self.foreground,
-                    bg=self.background,font=self.font_general,image=self.outdoor.forecast_0_night_icon)
-                forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
-                   bg=self.background,font=self.font_cat,text=precip_day[1] )
+                    bg=self.background,font=self.font_general,image=icon_night_0)
+                    
+                if forecast_source ==1:    
+                    forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                        bg=self.background,font=self.font_cat,text=precip_day[1] )
+                else:
+                    forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                        bg=self.background,font=self.font_cat,text=precip_night[0] )
+                        
             forecast_0_icon.grid(row='2',column='1',padx=(0,10))
             forecast_0_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[0])
@@ -543,31 +581,42 @@ class Main():
                 bg=self.background,font=self.font_general,text=days[1] )
             forecast_1_day.grid(row='1',column='2',padx=(0,10))
             forecast_1_icon = tk.Label(self.lef_bottom,fg=self.foreground,
-                bg=self.background,font=self.font_general,image=self.outdoor.forecast_1_day_icon )
+                bg=self.background,font=self.font_general,image=icon_day_1 )
             forecast_1_icon.grid(row='2',column='2',padx=(0,10))
             forecast_1_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[1])
             forecast_1_temp.grid(row='3',column='2',padx=(0,10))
-            forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
-                bg=self.background,font=self.font_cat,text=precip_day[2] )
+            
+            if forecast_source ==1: 
+                forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                    bg=self.background,font=self.font_cat,text=precip_day[1] )
+            else:
+                forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                    bg=self.background,font=self.font_cat,text=precip_day[2] )
+                
             forecast_1_precip.grid(row='1',column='2',padx=(95,5),pady=(0,0))
             # Day 2
             forecast_2_day = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=days[2] )
             forecast_2_day.grid(row='1',column='3',padx=(0,0))
             forecast_2_icon = tk.Label(self.lef_bottom,fg=self.foreground,
-                bg=self.background,font=self.font_general,image=self.outdoor.forecast_2_day_icon )
+                bg=self.background,font=self.font_general,image=icon_day_2 )
             forecast_2_icon.grid(row='2',column='3')
             forecast_2_temp = tk.Label(self.lef_bottom,fg=self.foreground,
                 bg=self.background,font=self.font_general,text=temps[2])
             forecast_2_temp.grid(row='3',column='3',padx=(0,0))
-            forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
-                bg=self.background,font=self.font_cat,text=precip_day[4] )
+            
+            if forecast_source == 1:
+                forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                    bg=self.background,font=self.font_cat,text=precip_day[4] )
+            else:
+                forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
+                    bg=self.background,font=self.font_cat,text=precip_day[2] )
             forecast_2_precip.grid(row='1',column='3',padx=(95,0),pady=(0,0))
-        except:
-            print('display outdoor Weather Ch only error:  ') #debug
+        except(Exception) as e:
+            print(e) #debug
             logging.info('display outdoor Weather Ch only error: ')
-            pass
+            #pass
             
         # weather sevice indicator
         service_text = tk.Label(self.lef_bottom,fg=self.foreground,
