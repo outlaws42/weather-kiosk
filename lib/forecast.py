@@ -17,8 +17,8 @@ class WeatherCh():
 
     def get_weather_info(self):
         try:
-            if self.api == 'yes':
-                weather = pywapi.get_weather_from_weather_com(self.zip_code, units = 'imperial')
+            if api == 'yes':
+                weather = pywapi.get_weather_from_weather_com(zip_code, units = 'imperial')
                 tmod.save_pickle('weatherch.cm',weather,'home')
                 self.forecastw = tmod.open_pickle('weatherch.cm','home')
                 self.warning = ''
