@@ -137,10 +137,18 @@ class Wu():
             self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
     
     def day_night(self):
-        sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
-        sunrise_min =self.weather['sun_phase']['sunrise']['minute']
-        sunset_hour =self.weather['sun_phase']['sunset']['hour']
-        sunset_min =self.weather['sun_phase']['sunset']['minute']
+        try:
+            sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
+            sunrise_min =self.weather['sun_phase']['sunrise']['minute']
+            sunset_hour =self.weather['sun_phase']['sunset']['hour']
+            sunset_min =self.weather['sun_phase']['sunset']['minute']
+        except(Exception) as e:
+            print('sunrise-Set error {}'.format(e))
+            sunrise_hour = "6"
+            sunrise_min = "18"
+            sunset_hour = "20"
+            sunset_min = "59"
+            
         now = datetime.datetime.now()
         morning = now.replace(hour=int(sunrise_hour), 
             minute=int(sunrise_min), second=0, microsecond=0)
