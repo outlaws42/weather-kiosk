@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
+import inspect
 import tkinter as tk
 import lib.pywapi as pywapi
 import logging
@@ -11,6 +12,11 @@ logging.basicConfig(filename='weatherch.log', level=logging.INFO, format='%(asct
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
+    if unit == "metric":
+        forecast_unit = 'metric'
+    else:
+        forecast_unit = 'imperial'
+    
 
     def __init__(self):
         pass
@@ -18,7 +24,7 @@ class WeatherCh():
     def get_weather_info(self):
         try:
             if api == 'yes':
-                weather = pywapi.get_weather_from_weather_com(zip_code, units = 'imperial')
+                weather = pywapi.get_weather_from_weather_com(zip_code, units = self.forecast_unit)
                 tmod.save_pickle('weatherch.cm',weather,'home')
                 self.forecastw = tmod.open_pickle('weatherch.cm','home')
                 self.warning = ''
@@ -91,6 +97,8 @@ class WeatherCh():
         self.forecast_2_night_icon=self.icon_select(night_code[2])
 
     def icon_select(self,icon_code):
+        source = inspect.stack()[1][3]
+        print('{} = {}'.format(source,icon_code))
         try:
             icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(icon_path,icon_code)))
         except:

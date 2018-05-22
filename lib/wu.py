@@ -129,13 +129,17 @@ class Wu():
             pass
 
         # Current Icon      
-        now_morn_eve = self.day_night()
-        now, morning, evening = now_morn_eve
-        if morning <= now <= evening:
-            self.current_icon = self.icon_select(self.weather['current_observation']['icon'])
-        else:
-            self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
-    
+        try:
+            now_morn_eve = self.day_night()
+            now, morning, evening = now_morn_eve
+            if morning <= now <= evening:
+                self.current_icon = self.icon_select(self.weather['current_observation']['icon'])
+            else:
+                self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
+        except(Exception) as e:
+            print('current Icon error {}'.format(e))
+            self.current_icon = 'na'
+                
     def day_night(self):
         try:
             sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
