@@ -52,7 +52,7 @@ from lib.settings import fullscreen, forecast_source
 
 
 class Main():
-    version = '2.1.18'
+    version = '2.1.19'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"

@@ -138,7 +138,7 @@ class Wu():
                 self.current_icon = self.icon_select('nt_{}'.format(self.weather['current_observation']['icon']))
         except(Exception) as e:
             print('current Icon error {}'.format(e))
-            self.current_icon = 'na'
+            self.current_icon = self.icon_select('na')
                 
     def day_night(self):
         try:

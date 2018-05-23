@@ -35,27 +35,10 @@ class WeatherCh():
            self.forecastw = tmod.open_pickle('weatherch.cm','home') 
            self.warning = 'Using Saved Data'
            pass
-        self.units_of_measure()
-    
-    def units_of_measure(self):
-        if unit == 'metric':
-            self.temp_measure = 'c' 
-            self.speed = 'kph'
-            self.measure = 'mm'
-        else:
-            self.temp_measure = 'f' 
-            self.speed = 'mph'
-            self.measure = 'in'
 
-        
     def forecast_temp(self):
         # forecast high / low temp for 3 days    
         forecast = []
-        if self.temp_measure == 'c':
-            measure = 'celsius'
-        else:
-            measure = 'fahrenheit'
-        
         for i in range(3):
             temp = '{}{}/{}{}'.format(self.forecastw['forecasts'][i]['high'],self.degree_sign,self.forecastw['forecasts'][i]['low'],self.degree_sign)
             forecast.append(temp)
