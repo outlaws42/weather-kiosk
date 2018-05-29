@@ -35,7 +35,19 @@ class WeatherCh():
            self.forecastw = tmod.open_pickle('weatherch.cm','home') 
            self.warning = 'Using Saved Data'
            pass
-
+        
+    def forecast_days(self):
+        # forecast day for 3 days
+        forecast_day = []
+        for i in range(3):
+            temp = self.forecastw['forecasts'][i]['day_of_week']
+            temp_list = list(temp) # convert to list
+            temp_list[3:] = [] # slice list to show what we want
+            temp_day = "".join(temp_list) # join back to a string
+            forecast_day.append(temp_day)
+        return forecast_day
+        
+        
     def forecast_temp(self):
         # forecast high / low temp for 3 days    
         forecast = []

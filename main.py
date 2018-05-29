@@ -52,7 +52,7 @@ from lib.settings import fullscreen, forecast_source
 
 
 class Main():
-    version = '2.1.19'
+    version = '2.1.20'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -526,12 +526,14 @@ class Main():
             
             # Bottom Center
             # Forcast settings
-            days = self.outdoor.forecast_days()
+            #days = self.outdoor.forecast_days()
             if forecast_source == 1:
+                days = self.outdoor.forecast_days()
                 temps = self.outdoor.forecast_temp()
                 precip_day = self.outdoor.forecast_precip_day()
                 
             else:
+                days = self.forecastwc.forecast_days()
                 temps = self.forecastwc.forecast_temp()
                 precip_day = self.forecastwc.forecast_precip_day('day')
                 precip_night = self.forecastwc.forecast_precip_day('night')
@@ -614,7 +616,7 @@ class Main():
                     bg=self.background,font=self.font_cat,text=precip_day[2] )
             forecast_2_precip.grid(row='1',column='3',padx=(95,0),pady=(0,0))
         except(Exception) as e:
-            print(e) #debug
+            print("display error: {}".format(e)) #debug
             logging.info('display outdoor Weather Ch only error: ')
             #pass
             
