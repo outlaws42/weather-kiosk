@@ -65,7 +65,7 @@ class Main(tk.Frame):
     font_temp = ("ubuntu",55,"bold") # 55
     font_time = ("ubuntu",36,"bold") # 55
     refresh_type='1' # 1 = minutes 2 = Seconds
-    refresh_rate_amount = 1
+    refresh_rate_amount = 15
     
     if refresh_type =='1':
         refresh_rate =((refresh_rate_amount*60)*1000) # Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
