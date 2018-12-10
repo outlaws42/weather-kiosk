@@ -23,15 +23,11 @@
 #
 #
 """
-requires: python 3, tkinter 8.6, pywapi, pyowm
-For indoor temp sensor DHT22 the following need to be installed
-pigpio, DHT22
-pigpiod needs to be started at os start as root
-put the following line in sudo crontab -e
-@reboot              /usr/local/bin/pigpiod
-need to compile pigpio
-Files in main dir: DHT22.py, main.py
-Libraries in lib dir: indoor.py, noaa.py, owm.py weather_ch.py
+requires: python 3, tkinter 8.6, pywapi
+For indoor temp sensor DS18B20 the following need to be installed
+Starting with 3.0 this gets the indoor temp  from a  wireless temp sensor
+via MQTT. 
+
 """
 import datetime
 import logging
@@ -51,8 +47,8 @@ from lib.settings import zip_code as code
 from lib.settings import fullscreen, forecast_source
 
 
-class Main():
-    version = '2.1.20'
+class Main(tk.Frame):
+    version = '3.0.0'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -69,7 +65,7 @@ class Main():
     font_temp = ("ubuntu",55,"bold") # 55
     font_time = ("ubuntu",36,"bold") # 55
     refresh_type='1' # 1 = minutes 2 = Seconds
-    refresh_rate_amount = 30
+    refresh_rate_amount = 1
     
     if refresh_type =='1':
         refresh_rate =((refresh_rate_amount*60)*1000) # Minutes Refresh ((minutes*60)*1000) 1000 Miliseconds in a second
@@ -215,7 +211,9 @@ class Main():
         # END DATABASE CALLS
 
     def refresh_info(self):
-
+        # call indoor temp function
+        self.indoor.run()
+        
         self.frame0.destroy()
         try:
             self.frame0 = tk.Frame(self.root,background=self.background)
@@ -303,8 +301,6 @@ class Main():
             logging.info('Frame refresh error: ')
             pass
 
-        # call indoor temp function
-        self.indoor.readDHT22()
 
 
         # get weather info from the internet
@@ -316,15 +312,15 @@ class Main():
 
         # populate the weather info from the net.
         self.outdoor.gleen_info()
-        print('forecast_source = {}'.format(forecast_source))
+        #print('forecast_source = {}'.format(forecast_source))
         try:
             if forecast_source == 1:
                 
                 self.outdoor.forecast()
-                print('outdoor forecast()')
+                #print('outdoor forecast()')
             else:
                 self.forecastwc.forecast()
-                print('forecastwc forecast()')
+                #print('forecastwc forecast()')
         except(Exception) as e:
             print('This is the forecast call {}'.format(e))
             pass
@@ -399,25 +395,21 @@ class Main():
         refresh.grid(row='3',column='1',columnspan='1',sticky = 'w')
 
     def display_indoor(self):
+        temp = tmod.open_file('temp.txt')
+        temp_round = '{}{}'.format(round(float(temp)), self.degree_sign)
         try:
-            if self.indoor.inside_temp_f >'0':
+            
+            if temp >'0':
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.foreground,
                     bg=self.background,
-                    font=self.font_temp,text=self.indoor.indoor_temp)
+                    font=self.font_temp,text=temp_round)
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     columnspan='2',padx=(50,50))
-                indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,
-                    bg=self.background,
-                    font=self.font_general,text=self.indoor.indoor_hum)
-                indoor_hum.grid(row='4',column='0',padx=(145,0))
             else:
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.color_1,
                     bg=self.background,font=self.font_temp,text='70')
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     padx=(50,50))
-                indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,
-                    bg=self.background,font=self.font_general,text='??%')
-                indoor_hum.grid(row='3',column='0',padx=(145,0))
         except (NameError, AttributeError) as e:
             print('display_indoor error:  ' + str(e)) #debug
             logging.info('display_indoor error:  ' + str(e))
@@ -425,9 +417,6 @@ class Main():
                 bg=self.background,font=self.font_temp,text='70')
             indoor_temp.grid(row='1',column='0', sticky='w', rowspan='4', 
                 columnspan='2',padx=(50,50))
-            indoor_hum = tk.Label(self.f_indoor_temp,fg=self.color_3,
-                bg=self.background,font=self.font_general,text='??%')
-            indoor_hum.grid(row='3',column='0',padx=(145,0))
 
         # Indoor Temp label
         indoor_label = tk.Label(self.f_indoor_temp,fg=self.foreground,
@@ -538,7 +527,9 @@ class Main():
                 precip_day = self.forecastwc.forecast_precip_day('day')
                 precip_night = self.forecastwc.forecast_precip_day('night')
             now_morn_eve = self.outdoor.day_night()
+            #print('now_morn_eve = {}'.format(now_morn_eve))
             now, morning, evening = now_morn_eve
+            #print('now = {}'.format(now))
             
             #icons
             if forecast_source == 1:

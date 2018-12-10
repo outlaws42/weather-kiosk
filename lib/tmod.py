@@ -21,7 +21,7 @@ def get_resource_path(rel_path):
     abs_path_to_resource = os.path.abspath(rel_path_to_resource)
     return abs_path_to_resource
 
-def open_file(file_,type_='relative',variable='Hey'):
+def open_file(file_,type_='relative'):
     home = os.path.expanduser("~")
     try:
         if type_ == 'home':
@@ -42,7 +42,7 @@ def open_file(file_,type_='relative',variable='Hey'):
 
 def save_file(file_,variable,type_='relative'):
     home = os.path.expanduser("~")
-    if type_ == 'Home':
+    if type_ == 'home':
         with open('{}/{}'.format(home,file_), 'w') as output:
             output.write(variable)
     else:

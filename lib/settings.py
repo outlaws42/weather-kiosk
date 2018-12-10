@@ -8,3 +8,5 @@ api = 'yes' # Yes = use the api(Production). no = don't use the api and get info
 fullscreen = 'yes' # yes = fullscreen no = Windowed
 unit = 'in' # metric = Metric, in = Inch
 forecast_source = 2 # 1 = weather undergroound 2 = weather channel 
+broker_add = '192.168.1.26' # mqtt broker address
+

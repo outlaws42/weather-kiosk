@@ -1,62 +1,49 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-import logging
+
+import paho.mqtt.client as mqtt
 import time
-from lib.settings import unit
-try:
-    import pigpio
-    import DHT22
-except(ImportError) as e:
-    print('import error:  ' + str(e)) #debug
-    logging.info('import error:  ' + str(e))
-    pass
+import lib.tmod as tm
+from lib.settings import broker_add
 
-logging.basicConfig(filename='indoor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+class Indoor(mqtt.Client):
 
-class Indoor():
-    degree_sign= '\N{DEGREE SIGN}'
-    sleepTime = 4 # Time wait between indoor tempature readings
-      
-    def __init__(self):
-        pass
+	# Callback fires when conected to MQTT broker.
+    def on_connect(self, client, userdata, flags, rc):
+        print('Connected with result code {0}'.format(rc))
+        # Subscribe (or renew if reconnect).
+        self.subscribe('room/living/temperature')
+        self.looping_flag=0
         
-    def readDHT22(self):
+    
+    # Callback fires when a published message is received.
+    def on_message(self,client, userdata, msg):
+        t = str(msg.payload.decode("utf-8"))
+        print(t)
+        tm.save_file('temp.txt',t)
+
+    def run(self):
         try:
-            # Intitiate GPIO for pigpio
-            self.pi = pigpio.pi()
-            # Setup the sensor
-            self.dht22 = DHT22.sensor(self.pi, 27) # use the actual GPIO pin
-        
-            # Get a new reading
-            for i in range(2):
-                self.dht22.trigger()
-                print('DHT22 sensor reading ' + str(self.dht22.temperature()))
-                print('waiting  ' + str(self.sleepTime) + ' Seconds')
-                logging.info('waiting  ' + str(self.sleepTime) + ' Seconds')
-                time.sleep(self.sleepTime)
-
-                
-            # Save our values
-            self.inside_hum_d ='%.1f' % (self.dht22.humidity())
-            temp = float(self.dht22.temperature())
-            self.inside_temp_f_conv = int(temp*1.8+32) # Convert to fahrenheit
-            self.inside_temp_f = str(self.inside_temp_f_conv)
-            print(self.inside_hum_d)
-            
-            
-            # Indoor temp
-            if unit == 'metric':
-                self.indoor_temp = '{} {}'.format(temp,self.degree_sign)
-            else:
-                self.indoor_temp = self.inside_temp_f + '' + self.degree_sign
-            self.indoor_hum= round(float(self.inside_hum_d)),'%'
-        except(NameError, AttributeError) as e:
-            logging.info('No temp sensor found  ' + str(e))
-            print('No temp sensor found  ' + str(e))
+            self.connect(broker_add, 1883, 60)  # Connect to MQTT broker (also running on Pi)
+            self.loop_start()
+            self.looping_flag = 1
+            counter=0
+            while self.looping_flag == 1:
+                print('Waiting on callback to occur {}'.format(counter))
+                time.sleep(4) #  Pause 1/100 second
+                counter+=1
+        except Exception as e:
+            print(e)
+            t = '-58'
+            tm.save_file('temp.txt',t)
             pass
-            
-        
-if __name__ == "__main__":
-    app = Indoor()    
 
+        self.disconnect()
+        self.loop_stop()
+        
+ 
+if __name__ == "__main__":
+    app = Indoor()   
+    rc = app.run()
+           

@@ -9,6 +9,7 @@ api.py
 getpastdb.py
 *.geany
 env
+temp.txt
 
 
 

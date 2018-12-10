@@ -84,12 +84,11 @@ class WeatherCh():
         # day 1       
         # weather condition icon
         self.forecast_1_day_icon=self.icon_select(day_code[1])
-        self.forecast_1_night_icon=self.icon_select(night_code[1])
 
         # day 2
         # weather condition icon
         self.forecast_2_day_icon=self.icon_select(day_code[2])
-        self.forecast_2_night_icon=self.icon_select(night_code[2])
+
 
     def icon_select(self,icon_code):
         source = inspect.stack()[1][3]
