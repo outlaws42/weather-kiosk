@@ -14,10 +14,6 @@ The reason for writing this program was for 2 reasons.
 
 requires: python 3, tkinter 8.6, weather underground api key
 
-For indoor temp sensor DHT22 the following need to be installed
-
-pigpio
-
 ### api.py
 You will need to create a file called api.py in the lib dir. You can get a api key from https://www.wunderground.com/weather/api/ 
 ```
@@ -43,6 +39,7 @@ icon_path = 'Images/65'
 api = 'yes' # Yes = use the api(Production). no = don't use the api and get info from saved file(Development). 
 fullscreen = 'yes' # yes = fullscreen no = Windowed
 unit = 'in' # metric = Metric, in = Inch
+broker_add = 'localhost' # mqtt broker address
 
 ```
 
@@ -64,26 +61,6 @@ Then run this command to install the modules needed
 
 ```
 pip3 install -r requirements.txt
-
-```
-Installing pigpio for reading the GPIO pins on the raspberry pi. Note this is not needed if you are not
-going to use the indoor temp sensor.
-```
-rm master.zip
-sudo rm -rf pigpio-master
-wget https://github.com/joan2937/pigpio/archive/master.zip
-unzip master.zip
-cd pigpio-master
-make
-sudo make install
-
-```
-pigpiod needs to be started at os start as root
-
-put the following line in sudo crontab -e
-
-```
-@reboot              /usr/local/bin/pigpiod
 
 ```
 
