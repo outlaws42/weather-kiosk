@@ -48,7 +48,7 @@ from lib.settings import fullscreen, forecast_source
 
 
 class Main(tk.Frame):
-    version = '3.0.0'
+    version = '3.0.1'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
