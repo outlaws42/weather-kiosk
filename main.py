@@ -395,10 +395,15 @@ class Main(tk.Frame):
         refresh.grid(row='3',column='1',columnspan='1',sticky = 'w')
 
     def display_indoor(self):
-        temp = tmod.open_file('temp.txt')
-        temp_round = '{}{}'.format(round(float(temp)), self.degree_sign)
-        try:
-            
+        tempin = tmod.open_file('temp.txt') # open temp.txt
+        templist = tempin.split() # put values in a list
+        temp, tempdate, temptime = templist #  take values from the list put in variables
+        now_time = datetime.datetime.now().strftime('%M.%S') # Get current time min and Sec
+        diff_time = round(float(now_time) - float(temptime)) # subtract time from file from current time the round should be 0
+        print('This is the difference between current and file time: {}'.format(diff_time))
+        temp_round = '{}{}'.format(round(float(temp)), self.degree_sign) # temp together with degree sign 
+
+        if diff_time == 0:
             if temp >'0':
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.foreground,
                     bg=self.background,
@@ -407,14 +412,13 @@ class Main(tk.Frame):
                     columnspan='2',padx=(50,50))
             else:
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.color_1,
-                    bg=self.background,font=self.font_temp,text='70')
+                    bg=self.background,font=self.font_temp,text='70{}'.format(self.degree_sign))
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     padx=(50,50))
-        except (NameError, AttributeError) as e:
-            print('display_indoor error:  ' + str(e)) #debug
-            logging.info('display_indoor error:  ' + str(e))
+        else:
+            print('Indoor Temp Communication ERROR')
             indoor_temp = tk.Label(self.f_indoor_temp,fg=self.color_4,
-                bg=self.background,font=self.font_temp,text='70')
+                bg=self.background,font=self.font_temp,text='70{}'.format(self.degree_sign))
             indoor_temp.grid(row='1',column='0', sticky='w', rowspan='4', 
                 columnspan='2',padx=(50,50))
 

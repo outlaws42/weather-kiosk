@@ -92,7 +92,7 @@ class WeatherCh():
 
     def icon_select(self,icon_code):
         source = inspect.stack()[1][3]
-        print('{} = {}'.format(source,icon_code))
+        #print('{} = {}'.format(source,icon_code))
         try:
             icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(icon_path,icon_code)))
         except:

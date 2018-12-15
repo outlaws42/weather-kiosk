@@ -108,7 +108,7 @@ class Wu():
         try:
             # Feels Like
             self.windchill = round(float(self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]))
-            print('This is float {}'.format(self.windchill))
+            #print('This is float {}'.format(self.windchill))
             #self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
             #print('This int {}'.format(self.windchill))
         except(KeyError,ValueError) as e:
