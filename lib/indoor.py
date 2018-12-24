@@ -20,8 +20,9 @@ class Indoor(mqtt.Client):
     
     # Callback fires when a published message is received.
     def on_message(self,client, userdata, msg):
+        in_temp = str(msg.payload.decode("utf-8"))
         time_now = datetime.datetime.now().strftime("%Y-%m-%d %M.%S")
-        t = '{} {}'.format(str(msg.payload.decode("utf-8")), time_now)
+        t = '{} {}'.format(in_temp, time_now)
         print(t)
         tm.save_file('temp.txt',t)
 

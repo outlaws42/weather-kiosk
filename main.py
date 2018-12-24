@@ -48,7 +48,7 @@ from lib.settings import fullscreen, forecast_source
 
 
 class Main(tk.Frame):
-    version = '3.0.1'
+    version = '3.0.2'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -405,22 +405,29 @@ class Main(tk.Frame):
 
         if diff_time == 0:
             if temp >'0':
+                message = 'Temp sensor working fine'
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.foreground,
                     bg=self.background,
                     font=self.font_temp,text=temp_round)
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     columnspan='2',padx=(50,50))
             else:
+                temp_round
+                message = 'Temp sensor working but negative value'
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.color_1,
-                    bg=self.background,font=self.font_temp,text='70{}'.format(self.degree_sign))
+                    bg=self.background,font=self.font_temp,text= temp_round)
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     padx=(50,50))
         else:
-            print('Indoor Temp Communication ERROR')
+            temp_round = "E1"
+            message = 'Indoor Temp Communication ERROR'
             indoor_temp = tk.Label(self.f_indoor_temp,fg=self.color_4,
-                bg=self.background,font=self.font_temp,text='70{}'.format(self.degree_sign))
+                bg=self.background,font=self.font_temp,text=temp_round)
             indoor_temp.grid(row='1',column='0', sticky='w', rowspan='4', 
                 columnspan='2',padx=(50,50))
+                
+        
+        logging.info('{}: {}'.format(message,temp_round))
 
         # Indoor Temp label
         indoor_label = tk.Label(self.f_indoor_temp,fg=self.foreground,
