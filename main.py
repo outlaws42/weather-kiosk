@@ -179,6 +179,7 @@ class Main(tk.Frame):
     def read_past_db(self):
         today = datetime.date.today()
         if self.now_date != today:
+            print('This is read_past_db: {}'.format(temp_past))
             conn, cur = dp.create_connection(self.database_path)
             high = dp.past_temp(cur, conn,'high',temp_past)
             low = dp.past_temp(cur,conn, 'low', temp_past)
@@ -196,12 +197,13 @@ class Main(tk.Frame):
         self.database_path = tmod.get_resource_path('lib/weather.db')
         self.now_date = datetime.date.today()
         conn, cur = dp.create_connection(self.database_path)
+        print('This is intial_past_db')
         
         # create projects table
         dp.create_table(cur, conn, 'high')
         dp.create_table(cur, conn, 'low')
-        high = dp.past_temp(cur, conn,'high')
-        low = dp.past_temp(cur, conn,'low')
+        high = dp.past_temp(cur, conn,'high', temp_past)
+        low = dp.past_temp(cur, conn,'low', temp_past)
         try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
             self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
