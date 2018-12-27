@@ -44,11 +44,12 @@ import lib.db as dp
 import lib.tmod as tmod
 import lib.forecast as wc
 from lib.settings import zip_code as code
-from lib.settings import fullscreen, forecast_source
+from lib.settings import fullscreen, forecast_source, temp_past
+
 
 
 class Main(tk.Frame):
-    version = '3.0.2'
+    version = '3.0.3'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -179,8 +180,8 @@ class Main(tk.Frame):
         today = datetime.date.today()
         if self.now_date != today:
             conn, cur = dp.create_connection(self.database_path)
-            high = dp.past_temp(cur, conn,'high')
-            low = dp.past_temp(cur,conn, 'low')
+            high = dp.past_temp(cur, conn,'high',temp_past)
+            low = dp.past_temp(cur,conn, 'low', temp_past)
             self.now_date = datetime.date.today()
             try:
                 self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
@@ -412,7 +413,7 @@ class Main(tk.Frame):
                 indoor_temp.grid(row='1',column='0',sticky='w',rowspan='4',
                     columnspan='2',padx=(50,50))
             else:
-                temp_round
+                temp_round = "-"
                 message = 'Temp sensor working but negative value'
                 indoor_temp =tk.Label(self.f_indoor_temp,fg=self.color_1,
                     bg=self.background,font=self.font_temp,text= temp_round)
@@ -436,6 +437,14 @@ class Main(tk.Frame):
 
 
     def display_outdoor(self):
+        
+        if temp_past == 'day':
+            past_text = 'Yesterday\'s High/Low: '
+        elif temp_past == 'month':
+            past_text = 'Last Month\'s High/Low: '
+        elif temp_past == 'year':
+            past_text = 'Last Year\'s High/Low: '
+        
 
         # Top center block
         # Status, Past, Warning(Cloudy/Sunny  etc)
@@ -446,11 +455,11 @@ class Main(tk.Frame):
             bg=self.background,font=self.font_hum,text=self.outdoor.status)
         status_info.grid(row='1',column='1',sticky='w',pady=(0,0),padx=(120,0))
         past_h_text = tk.Label(self.f_top,fg=self.foreground,
-            bg=self.background,font=self.font_hum,text='Yest\'s High/Low: ')
+            bg=self.background,font=self.font_hum,text=past_text)
         past_h_text.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(0,0))
         past_h_info = tk.Label(self.f_top,fg=self.color_2,
             bg=self.background,font=self.font_hum,text=self.past_temp)
-        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(230,0))
+        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(315,0))
         if self.outdoor.warning:
             warning_info = tk.Label(self.f_top,fg=self.color_4,
                bg=self.background,font=self.font_cat,text=self.outdoor.warning)

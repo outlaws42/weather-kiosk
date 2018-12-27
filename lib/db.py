@@ -36,12 +36,12 @@ def high_low_temp_past(cursor,conn,table, date_= None):
             print(e)
             pass
 
-def past_temp(cursor,conn,table ):
+def past_temp(cursor,conn,table, time_f = 'day' ):
     cursor = conn.cursor()
 
     try:
         results = cursor.execute(
-        "SELECT * from {tb} where TDate =  DATE('now', 'localtime', '-1 day')".format(tb=table) )
+        "SELECT * from {tb} where TDate =  DATE('now', 'localtime', '-1 {tf}')".format(tb=table, tf=time_f) )
         past = list(results)
         if past:
             high_low = past[0]

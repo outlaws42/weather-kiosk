@@ -9,4 +9,6 @@ fullscreen = 'yes' # yes = fullscreen no = Windowed
 unit = 'in' # metric = Metric, in = Inch
 forecast_source = 2 # 1 = weather undergroound 2 = weather channel 
 broker_add = '192.168.1.26' # mqtt broker address
+temp_past = 'year'  # past temp display, 'day' = -1 day, 'month' = -1 month, 'year' = -1 year
+
 
