@@ -43,13 +43,9 @@ import lib.wu as wu
 import lib.db as dp
 import lib.tmod as tmod
 import lib.forecast as wc
-from lib.settings import zip_code as code
-from lib.settings import fullscreen, forecast_source, temp_past
-
-
 
 class Main(tk.Frame):
-    version = '3.0.3'
+    version = '3.0.4'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -75,10 +71,11 @@ class Main(tk.Frame):
 
     def __init__(self):
         self.root = tk.Tk()
+        self.read_config('config.json')
         self.root.title(self.software + ' ' + self.version)
         self.root.geometry('800x480')
         self.root.configure(bg = self.background)
-        if fullscreen == 'yes':
+        if self.fullscreen == True:
             self.root.overrideredirect(1) # Make the window borderless
         else:
             pass
@@ -147,7 +144,7 @@ class Main(tk.Frame):
         dewpoint = self.outdoor.dewpoint
         relhumidity = self.outdoor.humidity
         precip = self.outdoor.precip
-        zip_code = code
+        zip_code = self.code
         self.write_db(table,condition,otemp, 
             windspeed,feelslike,dewpoint,relhumidity,precip,zip_code)
 
@@ -179,10 +176,10 @@ class Main(tk.Frame):
     def read_past_db(self):
         today = datetime.date.today()
         if self.now_date != today:
-            print('This is read_past_db: {}'.format(temp_past))
+            print('This is read_past_db: {}'.format(self.temp_past))
             conn, cur = dp.create_connection(self.database_path)
-            high = dp.past_temp(cur, conn,'high',temp_past)
-            low = dp.past_temp(cur,conn, 'low', temp_past)
+            high = dp.past_temp(cur, conn,'high',self.temp_past)
+            low = dp.past_temp(cur,conn, 'low', self.temp_past)
             self.now_date = datetime.date.today()
             try:
                 self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
@@ -202,8 +199,8 @@ class Main(tk.Frame):
         # create projects table
         dp.create_table(cur, conn, 'high')
         dp.create_table(cur, conn, 'low')
-        high = dp.past_temp(cur, conn,'high', temp_past)
-        low = dp.past_temp(cur, conn,'low', temp_past)
+        high = dp.past_temp(cur, conn,'high', self.temp_past)
+        low = dp.past_temp(cur, conn,'low', self.temp_past)
         try:
             self.idp,self.conp,self.tempp,self.windp,self.feelp,self.dewp,self.relp,self.barp,self.datep,self.zipp = high
             self.idl,self.conl,self.templ,self.windl,self.feell,self.dewl,self.rell,self.barl,self.datel,self.zipl = low
@@ -215,6 +212,7 @@ class Main(tk.Frame):
 
     def refresh_info(self):
         # call indoor temp function
+        self.read_config('config.json')
         self.indoor.run()
         
         self.frame0.destroy()
@@ -308,7 +306,7 @@ class Main(tk.Frame):
 
         # get weather info from the internet
         self.outdoor.get_weather_info()
-        if forecast_source == 2:
+        if self.forecast_source == 2:
             self.forecastwc.get_weather_info()
         else:
             pass
@@ -317,7 +315,7 @@ class Main(tk.Frame):
         self.outdoor.gleen_info()
         #print('forecast_source = {}'.format(forecast_source))
         try:
-            if forecast_source == 1:
+            if self.forecast_source == 1:
                 
                 self.outdoor.forecast()
                 #print('outdoor forecast()')
@@ -440,11 +438,11 @@ class Main(tk.Frame):
 
     def display_outdoor(self):
         
-        if temp_past == 'day':
+        if self.temp_past == 'day':
             past_text = 'Yesterday\'s High/Low: '
-        elif temp_past == 'month':
+        elif self.temp_past == 'month':
             past_text = 'Last Month\'s High/Low: '
-        elif temp_past == 'year':
+        elif self.temp_past == 'year':
             past_text = 'Last Year\'s High/Low: '
         
 
@@ -538,7 +536,7 @@ class Main(tk.Frame):
             # Bottom Center
             # Forcast settings
             #days = self.outdoor.forecast_days()
-            if forecast_source == 1:
+            if self.forecast_source == 1:
                 days = self.outdoor.forecast_days()
                 temps = self.outdoor.forecast_temp()
                 precip_day = self.outdoor.forecast_precip_day()
@@ -554,7 +552,7 @@ class Main(tk.Frame):
             #print('now = {}'.format(now))
             
             #icons
-            if forecast_source == 1:
+            if self.forecast_source == 1:
                 icon_day_0 = self.outdoor.forecast_0_day_icon
                 icon_night_0 = self.outdoor.forecast_0_night_icon
                 icon_day_1 = self.outdoor.forecast_1_day_icon
@@ -579,7 +577,7 @@ class Main(tk.Frame):
                 forecast_0_icon = tk.Label(self.lef_bottom,fg=self.foreground,
                     bg=self.background,font=self.font_general,image=icon_night_0)
                     
-                if forecast_source ==1:    
+                if self.forecast_source ==1:    
                     forecast_0_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                         bg=self.background,font=self.font_cat,text=precip_day[1] )
                 else:
@@ -602,7 +600,7 @@ class Main(tk.Frame):
                 bg=self.background,font=self.font_general,text=temps[1])
             forecast_1_temp.grid(row='3',column='2',padx=(0,10))
             
-            if forecast_source ==1: 
+            if self.forecast_source ==1: 
                 forecast_1_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                     bg=self.background,font=self.font_cat,text=precip_day[1] )
             else:
@@ -621,7 +619,7 @@ class Main(tk.Frame):
                 bg=self.background,font=self.font_general,text=temps[2])
             forecast_2_temp.grid(row='3',column='3',padx=(0,0))
             
-            if forecast_source == 1:
+            if self.forecast_source == 1:
                 forecast_2_precip = tk.Label(self.lef_bottom,fg=self.foreground,
                     bg=self.background,font=self.font_cat,text=precip_day[4] )
             else:
@@ -644,12 +642,146 @@ class Main(tk.Frame):
         # Quit button settings
 
         quit_image=self.outdoor.current_icon
-        quitButton = tk.Button(self.f_outdoor_temp, bg=self.background,
+        quitButton = tk.Menubutton(self.f_outdoor_temp, bg=self.background,
                     fg=self.color_3, highlightthickness = 0, bd = 0, font=self.font_q,
-                    text = "X",command=self.root.quit)
-        quitButton.config(image=quit_image,width="60",height="60")
+                    text = "X") #command=self.root.quit
+        menu = tk.Menu(quitButton)
+        quitButton.config(image=quit_image, menu = menu) #image=quit_image,width="60",height="60"
+        #quitButton.add_cascade(label = "Entry", quitButton = menu
+        btnList = ['Settings', 'Refresh','Quit']
+        for btn in btnList:
+            menu.add_command(label=btn, command= lambda btn=btn: self.menuClicked(btn))
         quitButton.grid(column='1',row='4',sticky='sw',pady=(0,5),padx=(130,0))
+        
+    def menuClicked(self, btn):
+        if btn == 'Settings':
+            self.settings_dialog()
+            print(btn)
+            
+        elif btn == 'Refresh':
+            self.refresh_info()
+            
+        elif btn == 'Quit':
+            self.root.quit()
+            
+    def settings_dialog(self):
+        self.settings_window = tk.Toplevel()
+        self.settings_window.title("Settings")
+        self.settings_window.geometry('450x400')
+        if self.fullscreen == True:
+            self.settings_window.overrideredirect(True)
+        self.settings_window.geometry("+%d+%d" % (self.root.winfo_rootx()+250, self.root.winfo_rooty()+25))
+        
+        pws_label = tk.Label(self.settings_window, text="PWS: ").grid(column='1',row='1',sticky='w')
+        self.pws_var = tk.StringVar(self.settings_window, value=self.pws)
+        input_pws=tk.Entry(self.settings_window, textvariable=self.pws_var)
+        input_pws.grid(column='1',row='1',sticky='w', pady=(5,0),padx=(130,0))
+        
+        zip_label = tk.Label(self.settings_window, text="Zip Code: ")
+        zip_label.grid(column='1',row='2', sticky='w')
+        self.zip_var = tk.StringVar(self.settings_window, value=self.code)
+        input_zip=tk.Entry(self.settings_window, textvariable=self.zip_var)
+        input_zip.grid(column='1',row='2',sticky='w',pady=(5,0),padx=(130,0))
+        
+        icon_label = tk.Label(self.settings_window, text="Icons Path: ")
+        icon_label.grid(column='1',row='3',sticky='w')
+        self.icon_var = tk.StringVar(self.settings_window, value=self.icon_path)
+        input_icon=tk.Entry(self.settings_window, textvariable=self.icon_var)
+        input_icon.grid(column='1',row='3',sticky='w',pady=(5,0),padx=(130,0))
+        
+        ip_label = tk.Label(self.settings_window, text="Broker Address: ")
+        ip_label.grid(column='1',row='4',sticky='w')
+        self.ip_var = tk.StringVar(self.settings_window, value=self.broker_add)
+        input_ip=tk.Entry(self.settings_window, textvariable=self.ip_var)
+        input_ip.grid(column='1',row='4',sticky='w',pady=(5,0),padx=(130,0))
+        
+        #api_label = tk.Label(self.settings_window, text="Use the API?: ").grid(column='1',row='5')
+        self.api_var = tk.BooleanVar()
+        self.api_var.set(self.api)
+        check_api = tk.Checkbutton(self.settings_window, text='Check to use the API', 
+                var=self.api_var)
+        check_api.grid(column='1',row='5',sticky='w', pady=(5,0))
+        
+        self.fs_var = tk.BooleanVar()
+        self.fs_var.set(self.fullscreen)
+        check_fs = tk.Checkbutton(self.settings_window, text='Check for fullscreen (Restart required)', 
+                var=self.fs_var) # onvalue="RGB", offvalue="YCbCr"
+        check_fs.grid(column='1',row='6',sticky='w', pady=(5,0))
+        
+        ms_label = tk.Label(self.settings_window, text="Choose the unit of measure ")
+        ms_label.grid(column='1',row='7',sticky='w', pady=(5,0))
+        self.ms_var = tk.StringVar()
+        self.ms_var.set(self.unit)
+        check_in = tk.Radiobutton(self.settings_window, text='Inch', 
+                var=self.ms_var, value="inch")
+        check_in.grid(column='1',row='8',sticky='w')
+        check_mt = tk.Radiobutton(self.settings_window, text='Metric', 
+                var=self.ms_var, value="metric")
+        check_mt.grid(column='1',row='9',sticky='w')
+        
+        fc_label = tk.Label(self.settings_window, text="Select the source for the forecast ")
+        fc_label.grid(column='1',row='10',sticky='w', pady=(5,0))
+        self.fc_var = tk.IntVar()
+        self.fc_var.set(self.forecast_source)
+        check_wu = tk.Radiobutton(self.settings_window, text='Weather Underground', 
+                var=self.fc_var, value=1)
+        check_wu.grid(column='1',row='11',sticky='w')
+        check_wc = tk.Radiobutton(self.settings_window, text='Weather Channel', 
+                var=self.fc_var, value=2)
+        check_wc.grid(column='1',row='12',sticky='w')
+        
+        
+        pst_label = tk.Label(self.settings_window, text="Select how far back you want the past temp ")
+        pst_label.grid(column='1',row='13',sticky='w', pady=(5,0))
+        self.pst_var = tk.StringVar()
+        self.pst_var.set(self.temp_past)
+        check_day = tk.Radiobutton(self.settings_window, text='Day', 
+                var=self.pst_var, value="day")
+        check_day.grid(column='1',row='14',sticky='w')
+        check_month= tk.Radiobutton(self.settings_window, text='Month', 
+                var=self.pst_var, value="month")
+        check_month.grid(column='1',row='15',sticky='w')
+        check_year= tk.Radiobutton(self.settings_window, text='Year', 
+                var=self.pst_var, value="year")
+        check_year.grid(column='1',row='16',sticky='w')
+        
+        
+        ok_button = tk.Button(self.settings_window, text="Ok", command=lambda btn='ok_button': self.ok_cancel(btn))
+        ok_button.grid(column='1',row='25', pady=(5,0),padx=(130,0))
+        cancel_button = tk.Button(self.settings_window, text="Cancel", command=lambda btn='cancel_button': self.ok_cancel(btn))
+        cancel_button.grid(column='1',row='25',pady=(5,0))
 
+    def ok_cancel(self, btn):
+        if btn == 'cancel_button':
+            self.settings_window.destroy()
+            print(btn)
+        if btn == 'ok_button':
+            pws = self.pws_var.get()
+            zip_ = self.zip_var.get()
+            icon = self.icon_var.get()
+            ip = self.ip_var.get()
+            api = self.api_var.get()
+            fs = self.fs_var.get()
+            ms = self.ms_var.get()
+            fc = self.fc_var.get()
+            pst = self.pst_var.get()
+            
+            output = {'pws': pws, 'code': zip_, 'icon_path': icon, 
+                    'broker_add': ip, 'api': api, 'fullscreen': fs,
+                    'unit': ms, 'forecast_source': fc, 'temp_past': pst}
+            self.write_config('config.json', output)
+            self.settings_window.destroy()
 
+            
+    def write_config(self, file_, dictionary,):
+        tmod.save_json(file_, dictionary)
+        self.read_config('config.json')
+    
+    def read_config(self,file_='config.json'):
+            config = tmod.open_json(file_)
+            config_value = [value for (key,value) in sorted(config.items())]           
+            self.api, self.broker_add, self.code, self.forecast_source, self.fullscreen, self.icon_path, self.pws, self.temp_past, self.unit = config_value
+            
+        
 if __name__ == "__main__":
     app = Main()

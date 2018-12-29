@@ -8,6 +8,7 @@ import sys
 import inspect
 import pickle
 import datetime
+import json
 
 try:
     from bs4 import BeautifulSoup  # Needs to be installed through pip
@@ -21,7 +22,7 @@ def get_resource_path(rel_path):
     abs_path_to_resource = os.path.abspath(rel_path_to_resource)
     return abs_path_to_resource
 
-def open_file(file_,type_='relative'):
+def open_file(file_,type_='relative',variable='Hey'):
     home = os.path.expanduser("~")
     try:
         if type_ == 'home':
@@ -42,7 +43,7 @@ def open_file(file_,type_='relative'):
 
 def save_file(file_,variable,type_='relative'):
     home = os.path.expanduser("~")
-    if type_ == 'home':
+    if type_ == 'Home':
         with open('{}/{}'.format(home,file_), 'w') as output:
             output.write(variable)
     else:
@@ -61,6 +62,8 @@ def save_pickle(file_,variable,type_='relative'):
                     print('saved file')
     except(FileNotFoundError) as e:
         print(e)
+        
+
         
 def open_pickle(file_,type_='relative'):
     home = os.path.expanduser("~")
@@ -82,6 +85,36 @@ def open_pickle(file_,type_='relative'):
         else:
             with open(get_resource_path(file_), 'wb') as fle:
                 pickle.dump(variable, fle)
+                
+def save_json(file_,variable,type_='relative'):
+    home = os.path.expanduser("~")
+    if type_ == 'Home':
+        with open('{}/{}'.format(home,file_), 'w') as output:
+            json.dump(variable,output, sort_keys=True, indent=4)
+    else:
+        with open(get_resource_path(file_), 'w') as output:
+            json.dump(variable,output, sort_keys=True, indent=4)
+                
+def open_json(file_,type_='relative'):
+    home = os.path.expanduser("~")
+    try:
+        if type_ == 'home':
+            with open('{}/{}'.format(home,file_), 'r') as fle:
+                    variable = json.load(fle)
+            return variable
+        else:
+            with open(get_resource_path(file_), 'r') as fle:
+                    variable = json.load(fle)
+            return variable
+    except(FileNotFoundError, EOFError) as e:
+        print(e)
+        variable = 0
+        if type_ == 'home':
+            with open('{}/{}'.format(home,file_), 'w') as fle:
+                json.dump(variable, fle)
+        else:
+            with open(get_resource_path(file_), 'w') as fle:
+                json.dump(variable, fle)
               
 # Gleen info ////////////////////////////////////////////////////
 def html_info(tag,url):
@@ -147,5 +180,44 @@ def year_current():
     return current_year
     
 def time_now():
-    current =  datetime.datetime.now().time().strftime('%H:%M:%S')
+    current =  datetime.datetime.now().strftime('%H:%M:%S')
     return current
+
+   
+def import_temp(file_='temp.txt'):
+    '''
+    Import temp from text file then split off each word. 
+    returns current temp  
+    '''
+    tempin = open_file(file_)
+    templist = tempin.split()
+    temp, day, hour = templist
+    now_hour = datetime.datetime.now().strftime('%H.%M')
+    temp_diff = round(float(now_hour) - float(hour))
+        
+    if temp_diff == 0:  
+        if temp > '0':
+            print('Temp diff: {}'.format(temp_diff))
+            print('This is the temp: {}'.format(temp))
+            current_temp = temp
+        else:
+                current_temp = 'Bad Reading'
+    else:
+        current_temp = 'Sensor Needs Reset'
+        print('Sensor needs reset')
+        
+    return current_temp
+        
+def try_float(temp):
+    '''
+    Try's to change a string into a float. 
+    if it fails it returns original temp
+    if it converts it returns the temp as a float
+    '''
+    try:
+        temp = float(temp)
+    except Exception as e:
+        print(e)
+        temp = temp
+    return temp
+    

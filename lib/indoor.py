@@ -6,7 +6,6 @@ import paho.mqtt.client as mqtt
 import time
 import datetime
 import lib.tmod as tm
-from lib.settings import broker_add
 
 class Indoor(mqtt.Client):
 
@@ -27,8 +26,9 @@ class Indoor(mqtt.Client):
         tm.save_file('temp.txt',t)
 
     def run(self):
+        self.read_config()
         try:
-            self.connect(broker_add, 1883, 60)  # Connect to MQTT broker (also running on Pi)
+            self.connect(self.broker_add, 1883, 60)  # Connect to MQTT broker (also running on Pi)
             self.loop_start()
             self.looping_flag = 1
             counter=0
@@ -45,6 +45,10 @@ class Indoor(mqtt.Client):
         self.disconnect()
         self.loop_stop()
         
+    def read_config(self,file_='config.json'):
+            config = tm.open_json(file_)
+            config_value = [value for (key,value) in sorted(config.items())]
+            self.broker_add = config_value[1]
  
 if __name__ == "__main__":
     app = Indoor()   

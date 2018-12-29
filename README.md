@@ -24,24 +24,12 @@ key = 'your_weather_underground_api_key'
 
 ```
 
-### settings.py
+### settings Dialog
  The zip code is only used to insert into the
 database. You can find the pws code for your area by going to https://www.wunderground.com/ and then search location 
-by zip code or city. 
+by zip code or city.  As of version 3.0.4 settings.py is not used instead there is a settings dialog. 
+There is a drop down menu from the current status image(Image located with the outside temp).
 
-```
-#! /usr/bin/env python3
-
-# -*- coding: utf-8 -*-
-pws = 'pws_for_your_location'
-zip_code = 'your_zip_code'
-icon_path = 'Images/65'
-api = 'yes' # Yes = use the api(Production). no = don't use the api and get info from saved file(Development). 
-fullscreen = 'yes' # yes = fullscreen no = Windowed
-unit = 'in' # metric = Metric, in = Inch
-broker_add = 'localhost' # mqtt broker address
-
-```
 
 ### Installing
 

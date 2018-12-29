@@ -8,7 +8,6 @@ import requests
 import lib.pywapi as pywapi
 import lib.tmod as tmod
 from lib.api import key
-from lib.settings import pws, icon_path, api, unit, zip_code
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Wu():
@@ -18,9 +17,10 @@ class Wu():
         pass
 
     def get_weather_info(self):
+        self.read_config()
         try:
-            if api == 'yes':
-                f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(key,pws))
+            if self.api == True:
+                f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(key,self.pws))
                 weather = f.json()
                 tmod.save_pickle('weather.cm',weather,'home')
                 self.weather = tmod.open_pickle('weather.cm','home')
@@ -35,7 +35,7 @@ class Wu():
         self.units_of_measure()
     
     def units_of_measure(self):
-        if unit == 'metric':
+        if self.unit == 'metric':
             self.temp_measure = 'c' 
             self.speed = 'kph'
             self.measure = 'mm'
@@ -120,7 +120,7 @@ class Wu():
 
         try:
             # Precip Today
-            self.precip =  self.weather['current_observation']['precip_today_{}'.format(unit)]
+            self.precip =  self.weather['current_observation']['precip_today_{}'.format(self.unit)]
         except(KeyError) as e:
             print('Barometer weather error:  ' + str(e)) #debug
             logging.info('Barometer weather error:  ' + str(e))
@@ -215,10 +215,23 @@ class Wu():
 
     def icon_select(self,icon_code):
         try:
-            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(icon_path,icon_code)))
+            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(self.icon_path,icon_code)))
         except:
-            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(icon_path)))
+            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(self.icon_path)))
         return(icon)
+        
+    def read_config(self,file_='config.json'):
+            config = tmod.open_json(file_)
+            config_value = [value for (key,value) in sorted(config.items())]
+            # pws icon_path api unit code
+            self.api = config_value[0]
+            #self.code = config_value[2]
+            self.icon_path = config_value[5]
+            self.pws = config_value[6]
+            self.unit = config_value[8]
+
+            
+            
 
 
 if __name__ == "__main__":

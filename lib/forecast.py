@@ -7,24 +7,26 @@ import lib.pywapi as pywapi
 import logging
 import inspect
 import lib.tmod as tmod
-from lib.settings import pws, icon_path, api, unit, zip_code
 logging.basicConfig(filename='weatherch.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class WeatherCh():
     degree_sign= '\N{DEGREE SIGN}'
-    if unit == "metric":
-        forecast_unit = 'metric'
-    else:
-        forecast_unit = 'imperial'
+    
     
 
     def __init__(self):
         pass
 
     def get_weather_info(self):
+        self.read_config()
+        if self.unit == "metric":
+            forecast_unit = 'metric'
+        else:
+            forecast_unit = 'imperial'
+        
         try:
-            if api == 'yes':
-                weather = pywapi.get_weather_from_weather_com(zip_code, units = self.forecast_unit)
+            if self.api == True:
+                weather = pywapi.get_weather_from_weather_com(self.code, units = self.forecast_unit)
                 tmod.save_pickle('weatherch.cm',weather,'home')
                 self.forecastw = tmod.open_pickle('weatherch.cm','home')
                 self.warning = ''
@@ -94,12 +96,19 @@ class WeatherCh():
         source = inspect.stack()[1][3]
         #print('{} = {}'.format(source,icon_code))
         try:
-            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(icon_path,icon_code)))
+            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(self.icon_path,icon_code)))
         except:
-            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(icon_path)))
+            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(self.icon_path)))
         return(icon)
 
-
+    def read_config(self,file_='config.json'):
+            config = tmod.open_json(file_)
+            config_value = [value for (key,value) in sorted(config.items())]
+            # icon_path api unit code
+            self.api = config_value[0]
+            self.code = config_value[2]
+            self.icon_path = config_value[5]
+            self.unit = config_value[8]
 
 if __name__ == "__main__":
     app = WeatherCh()
