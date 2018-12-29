@@ -459,7 +459,7 @@ class Main(tk.Frame):
         past_h_text.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(0,0))
         past_h_info = tk.Label(self.f_top,fg=self.color_2,
             bg=self.background,font=self.font_hum,text=self.past_temp)
-        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(315,0))
+        past_h_info.grid(row='2',column='1',sticky='w',pady=(0,0),padx=(290,0))
         if self.outdoor.warning:
             warning_info = tk.Label(self.f_top,fg=self.color_4,
                bg=self.background,font=self.font_cat,text=self.outdoor.warning)
