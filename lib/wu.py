@@ -22,14 +22,14 @@ class Wu():
             if self.api == True:
                 f = requests.get('http://api.wunderground.com/api/{}/astronomy/forecast/conditions/q/pws:{}.json'.format(key,self.pws))
                 weather = f.json()
-                tmod.save_pickle('weather.cm',weather,'home')
-                self.weather = tmod.open_pickle('weather.cm','home')
+                tmod.save_json('weather.json',weather,'home')
+                self.weather = tmod.open_json('weather.json','home')
                 self.warning = ''
             else:
-                self.weather = tmod.open_pickle('weather.cm','home')
+                self.weather = tmod.open_json('weather.json','home')
                 self.warning = 'Using Saved Data'
         except:
-           self.weather = tmod.open_pickle('weather.cm','home')
+           self.weather = tmod.open_json('weather.json','home')
            self.warning = 'Using Saved Data'
            pass
         self.units_of_measure()

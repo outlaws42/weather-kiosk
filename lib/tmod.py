@@ -88,7 +88,7 @@ def open_pickle(file_,type_='relative'):
                 
 def save_json(file_,variable,type_='relative'):
     home = os.path.expanduser("~")
-    if type_ == 'Home':
+    if type_ == 'home':
         with open('{}/{}'.format(home,file_), 'w') as output:
             json.dump(variable,output, sort_keys=True, indent=4)
     else:

@@ -45,7 +45,7 @@ import lib.tmod as tmod
 import lib.forecast as wc
 
 class Main(tk.Frame):
-    version = '3.0.4'
+    version = '3.0.5'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -713,7 +713,7 @@ class Main(tk.Frame):
         self.ms_var = tk.StringVar()
         self.ms_var.set(self.unit)
         check_in = tk.Radiobutton(self.settings_window, text='Inch', 
-                var=self.ms_var, value="inch")
+                var=self.ms_var, value="in")
         check_in.grid(column='1',row='8',sticky='w')
         check_mt = tk.Radiobutton(self.settings_window, text='Metric', 
                 var=self.ms_var, value="metric")
