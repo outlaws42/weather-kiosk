@@ -45,7 +45,7 @@ import lib.tmod as tmod
 import lib.forecast as wc
 
 class Main(tk.Frame):
-    version = '3.0.5'
+    version = '3.0.6'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -61,6 +61,7 @@ class Main(tk.Frame):
     font_hum = ("ubuntu",20,"bold")
     font_temp = ("ubuntu",55,"bold") # 55
     font_time = ("ubuntu",36,"bold") # 55
+    run_once = 1 # intiate variable to 1 for high low write to the DB
     refresh_type='1' # 1 = minutes 2 = Seconds
     refresh_rate_amount = 15
     
@@ -123,7 +124,7 @@ class Main(tk.Frame):
     def get_high_low_temp_db(self):
         now = datetime.datetime.now()
         today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
-        if now >= today1130pm:
+        if now >= today1130pm and self.run_once == 1:
             print('Getting High Low')
             conn, cur = dp.create_connection(self.database_path)
             high_low = dp.high_low_temp_today(cur, conn,'weather')
@@ -132,8 +133,12 @@ class Main(tk.Frame):
             dp.close(conn)
             self.write_past_db('high',high)
             self.write_past_db('low', low)
+            self.run_once = 0
+            print('run once = 0')
         else:
-            pass
+            if now < today1130pm:
+                self.run_once == 1
+                print('run once = 1')
 
     def db_config_wether(self):
         table = 'weather'
@@ -665,11 +670,13 @@ class Main(tk.Frame):
             self.root.quit()
             
     def settings_dialog(self):
-        self.settings_window = tk.Toplevel()
+        self.settings_window = tk.Toplevel(master=self.root)
         self.settings_window.title("Settings")
         self.settings_window.geometry('450x400')
         if self.fullscreen == True:
             self.settings_window.overrideredirect(True)
+            #self.settings_window.lift()
+            #self.settings_window.attributes('-topmost', 1)
         self.settings_window.geometry("+%d+%d" % (self.root.winfo_rootx()+250, self.root.winfo_rooty()+25))
         
         pws_label = tk.Label(self.settings_window, text="PWS: ").grid(column='1',row='1',sticky='w')
