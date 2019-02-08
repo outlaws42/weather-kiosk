@@ -45,7 +45,7 @@ import lib.tmod as tmod
 import lib.forecast as wc
 
 class Main(tk.Frame):
-    version = '3.0.7'
+    version = '3.0.8'
     software = 'Weather Kiosk'
     degree_sign= '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -124,7 +124,10 @@ class Main(tk.Frame):
 
     def get_high_low_temp_db(self):
         now = datetime.datetime.now()
-        today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
+        today12am = now.replace(hour=0, minute=5, second=0, microsecond=0)
+        today1230am = now.replace(hour=0, minute=35, second=0, microsecond=0)
+        today1130pm = now.replace(hour=11, minute=30, second=0, microsecond=0)
+        print(self.run_once)
         if now >= today1130pm and self.run_once == 1:
             print('Getting High Low')
             conn, cur = dp.create_connection(self.database_path)
@@ -137,9 +140,8 @@ class Main(tk.Frame):
             self.run_once = 0
             print('run once = 0')
         else:
-            if now < today1130pm:
-                self.run_once == 1
-                print('run once = 1')
+            if today12am <= now <= today1230am:
+                self.run_once = 1
 
     def db_config_wether(self):
         table = 'weather'
