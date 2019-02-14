@@ -28,9 +28,10 @@ class Wu():
             else:
                 self.weather = tmod.open_json('weather.json','home')
                 self.warning = 'Using Saved Data'
-        except:
+        except Exception as e:
            self.weather = tmod.open_json('weather.json','home')
            self.warning = 'Using Saved Data'
+           logging.info('Collect weather error:  ' + str(e))
            pass
         self.units_of_measure()
     
