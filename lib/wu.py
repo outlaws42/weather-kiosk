@@ -27,10 +27,10 @@ class Wu():
                 self.warning = ''
             else:
                 self.weather = tmod.open_json('weather.json','home')
-                self.warning = 'Using Saved Data'
+                self.warning = 'NAPI Using Saved Data'
         except Exception as e:
            self.weather = tmod.open_json('weather.json','home')
-           self.warning = 'Using Saved Data'
+           self.warning = 'ER Using Saved Data'
            logging.info('Collect weather error:  ' + str(e))
            pass
         self.units_of_measure()
@@ -123,8 +123,8 @@ class Wu():
             # Precip Today
             self.precip =  self.weather['current_observation']['precip_today_{}'.format(self.unit)]
         except(KeyError) as e:
-            print('Barometer weather error:  ' + str(e)) #debug
-            logging.info('Barometer weather error:  ' + str(e))
+            print('Precip weather error:  ' + str(e)) #debug
+            logging.info('Precip weather error:  ' + str(e))
             self.precip = "0.0"
             self.barometer_dir = "0.0"
             pass
