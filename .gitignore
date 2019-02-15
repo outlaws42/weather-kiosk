@@ -12,5 +12,5 @@ env
 temp.txt
 .idea/
 idea/*
-
+lib/test.py
 
