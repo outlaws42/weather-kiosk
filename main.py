@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.8'
+    version = '3.0.9'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -396,13 +396,17 @@ class Main(tk.Frame):
         refresh.grid(row='3', column='1', columnspan='1', sticky = 'w')
 
     def display_indoor(self):
-        tempin = tmod.open_file('temp.txt')  # open temp.txt
-        templist = tempin.split()  # put values in a list
-        temp, tempdate, temptime = templist  # take values from the list put in variables
-        now_time = datetime.datetime.now().strftime('%M.%S')  # Get current time min and Sec
-        diff_time = round(float(now_time) - float(temptime))  # subtract time from file from current time the round should be 0
-        temp_round = '{}{}'.format(round(float(temp)), self.degree_sign)  # temp together with degree sign
-
+        try:
+            tempin = tmod.open_file('temp.txt')  # open temp.txt
+            templist = tempin.split()  # put values in a list
+            temp, tempdate, temptime = templist  # take values from the list put in variables
+            now_time = datetime.datetime.now().strftime('%M.%S')  # Get current time min and Sec
+            diff_time = round(float(now_time) - float(temptime))  # subtract time from file from current time the round should be 0
+            temp_round = '{}{}'.format(round(float(temp)), self.degree_sign)  # temp together with degree sign
+        except Exception as e:
+            print('Issue with temp.txt: {}'.format(e))
+            diff_time = 1
+            
         if diff_time == 0:
             if temp > '0':
                 message = 'Temp sensor working fine'
