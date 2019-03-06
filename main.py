@@ -35,7 +35,7 @@ import time
 import tkinter as tk
 # user libraries
 import lib.indoor as indr
-import lib.wu as wu
+import lib.ds as wu
 import lib.db as dp
 import lib.tmod as tmod
 import lib.forecast as wc
