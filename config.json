@@ -2,10 +2,10 @@
     "api": true,
     "broker_add": "192.168.1.26",
     "code": "46764",
-    "forecast_source": 1,
+    "forecast_source": 2,
     "fullscreen": true,
     "icon_path": "Images/65",
-    "pws": "KINLARWI12",
+    "pws": "41.232921, -85.649106",
     "temp_past": "year",
-    "unit": "inch"
+    "unit": "in"
 }
