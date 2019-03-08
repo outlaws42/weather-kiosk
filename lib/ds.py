@@ -108,8 +108,8 @@ class Wu():
 
         try:
             # Humidity
-            self.humidity = self.weather['currently']['humidity']
-            print("Humidity: {}".format(self.humidity))
+            self.humidity = '{}%'.format(round(self.weather['currently']['humidity']*100))
+            print(self.humidity)
         except(KeyError,ValueError) as e:
             print('Humidity weather error:  ' + str(e)) #debug
             logging.info('Humidity check_weather error:  ' + str(e))
