@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 import datetime
+import math
 import tkinter as tk
 import logging
 import requests
@@ -31,6 +32,7 @@ class Wu():
             else:
                 self.weather = tmod.open_json('weather.json', 'home')
                 self.warning = 'NAPI Using Saved Data'
+                print(self.weather['daily']['data'][0]['apparentTemperatureHigh'])
         except Exception as e:
            self.weather = tmod.open_json('weather.json', 'home')
            self.warning = 'ER Using Saved Data'
@@ -50,7 +52,7 @@ class Wu():
         
     def gleen_info(self):
         # weather service
-        self.weather_service = 'Provided by:  Weather Underground'
+        self.weather_service = "Provided by:   Dark Sky"  # https://darksky.net/poweredby/
         
         try:    # left weather info
             # brief description of the weather
@@ -77,7 +79,7 @@ class Wu():
             # right weather info
             # wind
             self.wind_dir = self.weather['currently']['windBearing']
-            print("wind Direction: {}".format(self.wind_dir))
+            print("wind Direction: {}".format(math.radians(self.wind_dir)))
             self.wind_speed = self.weather['currently']['windSpeed']
             print("Wind Speed: {}".format(self.wind_speed))
             if self.wind_speed == 0:
@@ -89,9 +91,9 @@ class Wu():
         except(KeyError, ValueError) as e:
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
-            self.wind='0'
+            self.wind='Calm'
             self.wind_speed = 0
-            self.wind_gust = 'Gust ER'
+            self.wind_gust = 0
             pass
 
         try:
@@ -171,17 +173,19 @@ class Wu():
             minute=int(sunset_min), second=0, microsecond=0)
         return now, morning, evening
         
-    def forecast_days(self):
+    def forecast_days(self, days =3):
         # forecast day for 3 days
         forecast_day = []
-        for i in range(3):
-            temp = self.weather['daily']['data']['apparentTemperatureHigh']
-            print("forcastdays: {}".format(temp))
+        for i in range(days):
+            tstamp = self.weather['daily']['data'][i]['time']
+            day = datetime.datetime.utcfromtimestamp(tstamp).strftime('%a')
+            print("forcastdays: {}".format(day))
 
-            forecast_day.append(temp)
+            forecast_day.append(day)
+        print(forecast_day)
         return forecast_day
         
-    def forecast_temp(self):
+    def forecast_temp(self, days = 3):
         # forecast high / low temp for 3 days    
         forecast = []
         if self.temp_measure == 'c':
@@ -189,25 +193,31 @@ class Wu():
         else:
             measure = 'fahrenheit'
         
-        for i in range(3):
-            temp = '{}{}/{}{}'.format(self.weather['forecast']['simpleforecast']['forecastday'][i]['high'][measure],self.degree_sign,self.weather['forecast']['simpleforecast']['forecastday'][i]['low'][measure],self.degree_sign)
+        for i in range(days):
+            temp = '{}{}/{}{}'.format(round(self.weather['daily']['data'][i]['apparentTemperatureHigh']),
+                                      self.degree_sign, round(self.weather['daily']['data'][i]['apparentTemperatureLow']),
+                                      self.degree_sign)
             forecast.append(temp)
+        print(forecast)
         return forecast
     
-    def forecast_code(self):
+    def forecast_code(self, days = 3):
         # forecast code is day / night key word starting at index 0 for 3 days
         forecast_day_code = []
-        for i in range(6):
-            temp = self.weather['forecast']['txt_forecast']['forecastday'][i]['icon']
+        for i in range(days):
+            temp = self.weather['daily']['data'][i]['icon']
             forecast_day_code.append(temp)
         return forecast_day_code
         
-    def forecast_precip_day(self):
+    def forecast_precip_day(self, days=3):
         # pop is day night chance of precip starting at index 0 for 3 days
         forecast_pr = []
-        for i in range(6):
-            temp = self.weather['forecast']['txt_forecast']['forecastday'][i]['pop'] + '%'
-            forecast_pr.append(temp)
+        for i in range(days):
+
+            temp = self.weather['daily']['data'][i]['precipProbability']
+            temp_calc = (float(temp)*100)
+            forecast_pr.append('{}%'.format(int(temp_calc)))
+        print(forecast_pr)
         return forecast_pr
 
     def forecast(self):
@@ -215,15 +225,14 @@ class Wu():
         # day 0   
         # weather condition icon
         self.forecast_0_day_icon=self.icon_select(day_code[0])
-        self.forecast_0_night_icon=self.icon_select(day_code[1])
 
         # day 1       
         # weather condition icon
-        self.forecast_1_day_icon=self.icon_select(day_code[2])
+        self.forecast_1_day_icon=self.icon_select(day_code[1])
        
         # day 2
         # weather condition icon
-        self.forecast_2_day_icon=self.icon_select(day_code[4])
+        self.forecast_2_day_icon=self.icon_select(day_code[2])
  
 
     def icon_select(self,icon_code):

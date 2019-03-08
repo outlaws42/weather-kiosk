@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.9'
+    version = '3.0.10'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -551,12 +551,10 @@ class Main(tk.Frame):
             # icons
             if self.forecast_source == 1:
                 icon_day_0 = self.outdoor.forecast_0_day_icon
-                icon_night_0 = self.outdoor.forecast_0_night_icon
                 icon_day_1 = self.outdoor.forecast_1_day_icon
                 icon_day_2 = self.outdoor.forecast_2_day_icon
             else:
                 icon_day_0 = self.forecastwc.forecast_0_day_icon
-                icon_night_0 = self.forecastwc.forecast_0_night_icon
                 icon_day_1 = self.forecastwc.forecast_1_day_icon
                 icon_day_2 = self.forecastwc.forecast_2_day_icon
                        
@@ -564,22 +562,11 @@ class Main(tk.Frame):
             forecast_0_day = tk.Label(self.lef_bottom, fg=self.foreground,
                                       bg=self.background, font=self.font_general, text=days[0])
             forecast_0_day.grid(row='1', column='1', padx=(0, 30), pady=(0, 0))
-                
-            if morning <= now <= evening:
-                forecast_0_icon = tk.Label(self.lef_bottom, fg=self.foreground,
+
+            forecast_0_icon = tk.Label(self.lef_bottom, fg=self.foreground,
                                            bg=self.background, font=self.font_general, image=icon_day_0)
-                forecast_0_precip = tk.Label(self.lef_bottom, fg=self.foreground,
+            forecast_0_precip = tk.Label(self.lef_bottom, fg=self.foreground,
                                              bg=self.background, font=self.font_cat, text=precip_day[0])
-            else:
-                forecast_0_icon = tk.Label(self.lef_bottom, fg=self.foreground,
-                                           bg=self.background, font=self.font_general, image=icon_night_0)
-                    
-                if self.forecast_source == 1:
-                    forecast_0_precip = tk.Label(self.lef_bottom, fg=self.foreground,
-                                                 bg=self.background, font=self.font_cat, text=precip_day[1])
-                else:
-                    forecast_0_precip = tk.Label(self.lef_bottom, fg=self.foreground,
-                                                 bg=self.background, font=self.font_cat, text=precip_night[0] )
                         
             forecast_0_icon.grid(row='2', column='1', padx=(0,10))
             forecast_0_temp = tk.Label(self.lef_bottom, fg=self.foreground,
@@ -604,7 +591,7 @@ class Main(tk.Frame):
                 forecast_1_precip = tk.Label(self.lef_bottom, fg=self.foreground,
                                              bg=self.background, font=self.font_cat,text=precip_day[2])
                 
-            forecast_1_precip.grid(row='1', column='2', padx=(95, 5), pady=(0, 0))
+            forecast_1_precip.grid(row='1', column='2', padx=(105, 5), pady=(0, 0))
             # Day 2
             forecast_2_day = tk.Label(self.lef_bottom, fg=self.foreground,
                                       bg=self.background, font=self.font_general, text=days[2])
@@ -615,14 +602,10 @@ class Main(tk.Frame):
             forecast_2_temp = tk.Label(self.lef_bottom, fg=self.foreground,
                                        bg=self.background,font=self.font_general, text=temps[2])
             forecast_2_temp.grid(row='3', column='3', padx=(0, 0))
-            
-            if self.forecast_source == 1:
-                forecast_2_precip = tk.Label(self.lef_bottom, fg=self.foreground,
-                                             bg=self.background, font=self.font_cat, text=precip_day[4])
-            else:
-                forecast_2_precip = tk.Label(self.lef_bottom, fg=self.foreground,
+
+            forecast_2_precip = tk.Label(self.lef_bottom, fg=self.foreground,
                                              bg=self.background,font=self.font_cat, text=precip_day[2])
-            forecast_2_precip.grid(row='1', column='3', padx=(95, 0), pady=(0, 0))
+            forecast_2_precip.grid(row='1', column='3', padx=(105, 0), pady=(0, 0))
         except Exception as e:
             print("display error: {}".format(e))  # debug
             logging.info('display outdoor Weather Ch only error: ')
