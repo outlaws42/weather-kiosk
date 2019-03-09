@@ -2,11 +2,10 @@
 
 # -*- coding: utf-8 -*-
 import datetime
-import math
+import webbrowser
 import tkinter as tk
 import logging
 import requests
-import lib.pywapi as pywapi
 import lib.tmod as tmod
 from lib.api import key
 logging.basicConfig(filename='wu.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -32,7 +31,6 @@ class Wu():
             else:
                 self.weather = tmod.open_json('weather.json', 'home')
                 self.warning = 'NAPI Using Saved Data'
-                print(self.weather['daily']['data'][0]['apparentTemperatureHigh'])
         except Exception as e:
            self.weather = tmod.open_json('weather.json', 'home')
            self.warning = 'ER Using Saved Data'
@@ -57,7 +55,6 @@ class Wu():
         try:    # left weather info
             # brief description of the weather
             self.status = self.weather['currently']['summary']
-            print("status: {}".format(self.status))
         except(KeyError, ValueError) as e:
             print('Status weather error:  ' + str(e)) #debug
             logging.info('Status weather error:  ' + str(e))
@@ -67,7 +64,6 @@ class Wu():
         try:
             # outside temp .
             self.outdoor_temp = round(self.weather['currently']['temperature'])
-            print("Temp: {}{}".format(self.outdoor_temp, self.degree_sign))
         except(KeyError,ValueError) as e:
             print('Outdoor temp weather error:  ' + str(e)) #debug
             logging.info('Outdoor temp weather error:  ' + str(e))
@@ -78,16 +74,14 @@ class Wu():
         try:
             # right weather info
             # wind
-            self.wind_dir = self.weather['currently']['windBearing']
-            print("wind Direction: {}".format(math.radians(self.wind_dir)))
+            import_wind_dir = self.weather['currently']['windBearing']
+            self.wind_dir = self.degtocompass(import_wind_dir)
             self.wind_speed = self.weather['currently']['windSpeed']
-            print("Wind Speed: {}".format(self.wind_speed))
             if self.wind_speed == 0:
                 self.wind = "Calm"
             else:
                 self.wind = '{} at {}{}'.format(self.wind_dir, str(round(self.wind_speed)), self.speed)
             self.wind_gust = self.weather['currently']['windGust']
-            print("wind Gust: {}".format(self.wind_gust))
         except(KeyError, ValueError) as e:
             print('Wind weather error:  ' + str(e)) #debug
             logging.info('Wind weather error:  ' + str(e))
@@ -99,7 +93,6 @@ class Wu():
         try:
             # dewpoint
             self.dewpoint = round(self.weather['currently']['dewPoint'])
-            print("Dewpoint: {}".format(self.dewpoint))
         except(KeyError, ValueError) as e:
             print('Dewpoint weather error:  ' + str(e)) #debug
             logging.info('Dewpoint weather error:  ' + str(e))
@@ -109,7 +102,6 @@ class Wu():
         try:
             # Humidity
             self.humidity = '{}%'.format(round(self.weather['currently']['humidity']*100))
-            print(self.humidity)
         except(KeyError,ValueError) as e:
             print('Humidity weather error:  ' + str(e)) #debug
             logging.info('Humidity check_weather error:  ' + str(e))
@@ -119,10 +111,6 @@ class Wu():
         try:
             # Feels Like
             self.windchill = round(float(self.weather['currently']['apparentTemperature']))
-            print("windchill: {}".format(self.windchill))
-            # print('This is float {}'.format(self.windchill))
-            # self.windchill = self.weather['current_observation']['feelslike_{}'.format(self.temp_measure)]
-            # print('This int {}'.format(self.windchill))
         except(KeyError,ValueError) as e:
             self.windchill = self.outdoor_temp
             print('This is outdoor temp {}'.format(self.windchill))
@@ -133,7 +121,6 @@ class Wu():
         try:
             # Precip Today
             self.precip =  self.weather['currently']['precipIntensity']
-            print("Precip: {}".format(self.precip))
         except(KeyError) as e:
             print('Precip weather error:  ' + str(e)) #debug
             logging.info('Precip weather error:  ' + str(e))
@@ -142,47 +129,21 @@ class Wu():
             pass
 
         # Current Icon      
-        try:
-            now_morn_eve = self.day_night()
-            now, morning, evening = now_morn_eve
-            if morning <= now <= evening:
-                self.current_icon = self.icon_select(self.weather['currently']['icon'])
-            else:
-                self.current_icon = self.icon_select(self.weather['currently']['icon'])
-        except(Exception) as e:
-            print('current Icon error {}'.format(e))
-            self.current_icon = self.icon_select('na')
+        self.current_icon = self.icon_select(self.weather['currently']['icon'])
                 
-    def day_night(self):
-        try:
-            sunrise_hour =self.weather['sun_phase']['sunrise']['hour']
-            sunrise_min =self.weather['sun_phase']['sunrise']['minute']
-            sunset_hour =self.weather['sun_phase']['sunset']['hour']
-            sunset_min =self.weather['sun_phase']['sunset']['minute']
-        except(Exception) as e:
-            print('sunrise-Set error {}'.format(e))
-            sunrise_hour = "6"
-            sunrise_min = "18"
-            sunset_hour = "20"
-            sunset_min = "59"
-            
-        now = datetime.datetime.now()
-        morning = now.replace(hour=int(sunrise_hour), 
-            minute=int(sunrise_min), second=0, microsecond=0)
-        evening = now.replace(hour=int(sunset_hour), 
-            minute=int(sunset_min), second=0, microsecond=0)
-        return now, morning, evening
-        
+    def degtocompass(self, degrees):
+        direction = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW",
+                     "N"]
+        val = int((degrees / 22.5) + .5)
+        return direction[(val % 16)]
+
     def forecast_days(self, days =3):
         # forecast day for 3 days
         forecast_day = []
         for i in range(days):
             tstamp = self.weather['daily']['data'][i]['time']
             day = datetime.datetime.utcfromtimestamp(tstamp).strftime('%a')
-            print("forcastdays: {}".format(day))
-
             forecast_day.append(day)
-        print(forecast_day)
         return forecast_day
         
     def forecast_temp(self, days = 3):
@@ -198,7 +159,6 @@ class Wu():
                                       self.degree_sign, round(self.weather['daily']['data'][i]['apparentTemperatureLow']),
                                       self.degree_sign)
             forecast.append(temp)
-        print(forecast)
         return forecast
     
     def forecast_code(self, days = 3):
@@ -213,11 +173,9 @@ class Wu():
         # pop is day night chance of precip starting at index 0 for 3 days
         forecast_pr = []
         for i in range(days):
-
             temp = self.weather['daily']['data'][i]['precipProbability']
             temp_calc = (float(temp)*100)
             forecast_pr.append('{}%'.format(int(temp_calc)))
-        print(forecast_pr)
         return forecast_pr
 
     def forecast(self):

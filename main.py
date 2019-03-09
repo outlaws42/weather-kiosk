@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.10'
+    version = '3.0.11'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -545,8 +545,6 @@ class Main(tk.Frame):
                 temps = self.forecastwc.forecast_temp()
                 precip_day = self.forecastwc.forecast_precip_day('day')
                 precip_night = self.forecastwc.forecast_precip_day('night')
-            now_morn_eve = self.outdoor.day_night()
-            now, morning, evening = now_morn_eve
 
             # icons
             if self.forecast_source == 1:
