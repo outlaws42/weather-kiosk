@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.11'
+    version = '3.0.12'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -54,7 +54,7 @@ class Main(tk.Frame):
     color_2 = "yellow"  # status.
     color_3 = "deepskyblue2" # minus
     color_4 = "red"  # Indoor temp no sensor
-    font_ws = ("ubuntu", 9, 'bold')
+    font_ws = ("ubuntu", 10, 'bold')
     font_cat = ("ubuntu", 13, 'bold') # 11
     font_q = ("ubuntu", 10, 'bold')
     font_general = ("ubuntu", 21, "bold")  # 19
@@ -107,13 +107,15 @@ class Main(tk.Frame):
 
 
     def sign_plus(self):
+        # self.city = self.outdoor.city
         self.outdoor_temp = '{}{}'.format(self.outdoor.outdoor_temp, self.degree_sign)
         self.wind = self.outdoor.wind
         self.windchill = '{}{}'.format(self.outdoor.windchill, self.degree_sign)
         self.precip = '{} {}'.format(self.outdoor.precip, self.outdoor.measure)
         self.humidity = '{}%'.format(self.outdoor.humidity)
         self.dewpoint = '{}{}'.format(self.outdoor.dewpoint, self.degree_sign)
-        self.weather_service = '{}/ {} {}'.format(self.outdoor.weather_service, self.software, self.version)
+        self.weather_service = '{}/ {} {}/ Location: {}'.format(self.outdoor.weather_service,
+                                                                self.software, self.version, self.outdoor.city)
         self.past_temp = '{}{} / {}{}'.format(self.tempp, self.degree_sign, self.templ, self.degree_sign)
 
     #############################################
@@ -610,7 +612,7 @@ class Main(tk.Frame):
             # pass
             
         # weather service indicator
-        service_text = tk.Label(self.lef_bottom, fg=self.foreground,
+        service_text = tk.Label(self.lef_bottom, fg=self.color_1,
                                 bg=self.background, font=self.font_ws, text=self.weather_service)
         service_text.grid(row='4', column='1', columnspan='3', sticky='w',
                           pady=(0, 5), padx=(0, 5))
@@ -644,8 +646,8 @@ class Main(tk.Frame):
             
     def settings_dialog(self):
         padradheadx = 20
-        padradx = padradheadx + 20
-        padradlabx = padradx + 20
+        padradx = padradheadx + 10
+        padradlabx = padradx + 40
         padgeny = 8
         self.settings_window = tk.Toplevel(master=self.root)
         self.settings_window.title("Settings")
@@ -654,87 +656,78 @@ class Main(tk.Frame):
         if self.fullscreen:
             self.root.withdraw()  # will leave the root alive, but only settings visible.
         self.settings_window.geometry("+%d+%d" % (self.root.winfo_rootx()+20, self.root.winfo_rooty()+10))
-        
-        pws_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
-                             highlightthickness = 0, bd = 0, font=self.font_set, text="PWS: ")
-        pws_label.grid(column='1', row='1', sticky='w', padx=(10, 0))
-        
-        self.pws_var = tk.StringVar(self.settings_window, value=self.pws)
-        input_pws=tk.Entry(self.settings_window, textvariable=self.pws_var,
-                           fg=self.background, font=self.font_set, width=11)
-        input_pws.grid(column='1', row='1', sticky='w', pady=(padgeny, 0), padx=(175, 0))
-        
-        zip_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
-                             highlightthickness = 0, bd = 0, font=self.font_set, text="Zip Code: ")
-        zip_label.grid(column='1',row='2', sticky='w', padx=(10,0))
+
+        zip_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground,
+                             highlightthickness = 0, bd = 0, font=self.font_set, text="Address/Zip: ")
+        zip_label.grid(column='1',row='1', sticky='w', padx=(10,0))
         self.zip_var = tk.StringVar(self.settings_window, value=self.code)
         input_zip=tk.Entry(self.settings_window, textvariable=self.zip_var, 
-                           fg=self.background, font=self.font_set, width=11)
-        input_zip.grid(column='1', row='2', sticky='w', pady=(padgeny, 0), padx=(175, 0))
+                           fg=self.background, font=self.font_set, width=20)
+        input_zip.grid(column='1', row='1', sticky='w', pady=(padgeny, 0), padx=(175, 0))
         
         icon_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                               highlightthickness = 0, bd = 0, font=self.font_set, text="Icons Path: ")
-        icon_label.grid(column='1',row='3', sticky='w', padx=(10, 0))
+        icon_label.grid(column='1',row='2', sticky='w', padx=(10, 0))
         self.icon_var = tk.StringVar(self.settings_window, value=self.icon_path)
         input_icon=tk.Entry(self.settings_window, textvariable=self.icon_var, 
-                            fg=self.background, font=self.font_set, width=11)
-        input_icon.grid(column='1', row='3', sticky='w', pady=(padgeny, 0), padx=(175, 0))
+                            fg=self.background, font=self.font_set, width=20)
+        input_icon.grid(column='1', row='2', sticky='w', pady=(padgeny, 0), padx=(175, 0))
         
         ip_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                             highlightthickness = 0, bd = 0, font=self.font_set, text="Broker Host: ")
-        ip_label.grid(column='1', row='4', sticky='w', padx=(10, 0))
+        ip_label.grid(column='1', row='3', sticky='w', padx=(10, 0))
         self.ip_var = tk.StringVar(self.settings_window, value=self.broker_add)
         input_ip=tk.Entry(self.settings_window, textvariable=self.ip_var,
-                          fg=self.background, font=self.font_set, width=11)
-        input_ip.grid(column='1', row='4', sticky='w', pady=(padgeny, 0), padx=(175, 0))
+                          fg=self.background, font=self.font_set, width=20)
+        input_ip.grid(column='1', row='3', sticky='w', pady=(padgeny, 0), padx=(175, 0))
         
         api_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                              font=self.font_set, text="Check to use the API ")
-        api_label.grid(column='1', row='5', sticky = 'w', pady=(padgeny, 0), padx=(30, 0))
+        api_label.grid(column='1', row='4', sticky = 'w', pady=(padgeny, 0), padx=(30, 0))
         self.api_var = tk.BooleanVar()
         self.api_var.set(self.api)
         check_api = tk.Checkbutton(self.settings_window, bg=self.background,highlightthickness = 0, bd = 0,
                                    activebackground = self.background, var=self.api_var)
-        check_api.grid(column='1', row='5', sticky='w', padx=(10, 0), pady=(padgeny, 0))
+        check_api.grid(column='1', row='4', sticky='w', padx=(10, 0), pady=(padgeny, 0))
         
         # Full screen configure --------------------------------------
         fs_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                             font=self.font_set, text="Check for fullscreen")
-        fs_label.grid(column='1', row='6', sticky='w', pady=(padgeny, 0), padx=(30, 0))
+        fs_label.grid(column='1', row='5', sticky='w', pady=(padgeny, 0), padx=(30, 0))
         self.fs_var = tk.BooleanVar()
         self.fs_var.set(self.fullscreen)
         check_fs = tk.Checkbutton(self.settings_window, bg=self.background,
                                   highlightthickness = 0, bd = 0, activebackground = self.background,
                                   var=self.fs_var) # onvalue="RGB", offvalue="YCbCr"
-        check_fs.grid(column='1', row='6', sticky='w', pady=(padgeny, 0), padx=(10, 0))
+        check_fs.grid(column='1', row='5', sticky='w', pady=(padgeny, 0), padx=(10, 0))
 
         # Unit of measure configure --------------------------------------
         ms_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                             font=self.font_set, text="Unit of measure ")
-        ms_label.grid(column='1',row='7', sticky='w', pady=(padgeny, 0), padx=(padradheadx, 0))
+        ms_label.grid(column='1',row='6', sticky='w', pady=(padgeny, 0), padx=(padradheadx, 0))
         self.ms_var = tk.StringVar()
         self.ms_var.set(self.unit)
         
         check_inlabel = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                                  font=self.font_set,text="Inch ")
-        check_inlabel.grid(column='1', row='8', sticky='w', pady=(padgeny, 0), padx=(padradlabx, 0))
+        check_inlabel.grid(column='1', row='7', sticky='w', pady=(padgeny, 0), padx=(padradlabx, 0))
         check_in = tk.Radiobutton(self.settings_window, bg=self.background,
                                   highlightthickness = 0, bd = 0, activebackground = self.background,
                                   var=self.ms_var, value="in")
-        check_in.grid(column='1', row='8', sticky='w', pady=(padgeny, 0),padx=(padradx, 0))
+        check_in.grid(column='1', row='7', sticky='w', pady=(padgeny, 0),padx=(padradx, 0))
         
         check_mtlabel = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                                  font=self.font_set, text="Metric ")
-        check_mtlabel.grid(column='1', row='9', sticky='w', pady=(padgeny, 0), padx=(padradlabx, 0))
+        check_mtlabel.grid(column='1', row='8', sticky='w', pady=(padgeny, 0), padx=(padradlabx, 0))
         check_mt = tk.Radiobutton(self.settings_window, bg=self.background,
                                   highlightthickness = 0, bd = 0, activebackground = self.background,
                 var=self.ms_var, value="metric")
-        check_mt.grid(column='1', row='9', sticky='w', pady=(padgeny, 0), padx=(padradx, 0))
+        check_mt.grid(column='1', row='8', sticky='w', pady=(padgeny, 0), padx=(padradx, 0))
         
         # Forecast Source configure --------------------------------------
-        padrightx = 80
-        padrightradx = padrightx + 20
-        padrightradlabx = padrightradx + 20
+        padrightx = 40
+        padrightradx = padrightx + 10
+        padrightradlabx = padrightradx + 40
         fc_label = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
                             font=self.font_set, text="Forecast source ")
         fc_label.grid(column='2', row='1', sticky='w', pady=(padgeny, 0), padx=(padrightx, 0))
@@ -742,7 +735,7 @@ class Main(tk.Frame):
         self.fc_var.set(self.forecast_source)
         
         check_wulabel = tk.Label(self.settings_window, bg=self.background, fg=self.foreground, 
-                                 font=self.font_set, text="Weather Underground ")
+                                 font=self.font_set, text="Dark Sky")
         check_wulabel.grid(column='2', row='2', sticky='w', pady=(padgeny, 0), padx=(padrightradlabx, 0))
         check_wu = tk.Radiobutton(self.settings_window, bg=self.background,
                                   highlightthickness = 0, bd = 0, activebackground = self.background,
@@ -806,7 +799,6 @@ class Main(tk.Frame):
             self.settings_window.destroy()
             print(btn)
         if btn == 'ok_button':
-            pws = self.pws_var.get()
             zip_ = self.zip_var.get()
             icon = self.icon_var.get()
             ip = self.ip_var.get()
@@ -815,8 +807,8 @@ class Main(tk.Frame):
             ms = self.ms_var.get()
             fc = self.fc_var.get()
             pst = self.pst_var.get()
-            
-            output = {'pws': pws, 'code': zip_, 'icon_path': icon, 
+
+            output = {'code': zip_, 'icon_path': icon,
                       'broker_add': ip, 'api': api, 'fullscreen': fs,
                       'unit': ms, 'forecast_source': fc, 'temp_past': pst}
             self.write_config('config.json', output)
@@ -825,15 +817,14 @@ class Main(tk.Frame):
         # if self.fullscreen == True:
         self.root.deiconify()  # returns root window when done with settings dialog
 
-            
     def write_config(self, file_, dictionary,):
         tmod.save_json(file_, dictionary)
         self.read_config('config.json')
     
-    def read_config(self,file_='config.json'):
+    def read_config(self, file_='config.json'):
             config = tmod.open_json(file_)
             config_value = [value for (key,value) in sorted(config.items())]           
-            self.api, self.broker_add, self.code, self.forecast_source, self.fullscreen, self.icon_path, self.pws, \
+            self.api, self.broker_add, self.code, self.forecast_source, self.fullscreen, self.icon_path, \
             self.temp_past, self.unit = config_value
             
         

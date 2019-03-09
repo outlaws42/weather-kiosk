@@ -2,7 +2,8 @@
 
 # -*- coding: utf-8 -*-
 import datetime
-import webbrowser
+import geopy.geocoders
+from geopy.geocoders import Nominatim
 import tkinter as tk
 import logging
 import requests
@@ -18,14 +19,36 @@ class Wu():
         # self.get_weather_info()
         pass
 
+    def geolocation(self, address):
+        try:
+            geolocator = Nominatim(user_agent = "weather kiosk")
+            # location = geolocator.reverse("41.232921, -85.649106")
+            location = geolocator.geocode(address)
+            print(len(address))
+            addressout = location.address
+            addresslist = addressout.split(',')
+            if len(address) <= 5:
+                self.city = addresslist[0]
+            else:
+                self.city = addresslist[2]
+            print(self.city)
+            print(addresslist)
+            print(addressout)
+            return location.latitude, location.longitude
+        except Exception as e:
+            print(e)
+            return 41.232921, -85.649106
+
     def get_weather_info(self):
         self.read_config()
+        location = self.geolocation(self.code)
+        lat, long = location
+        print(location)
         try:
             if self.api == True:
-                
-                f = requests.get('https://api.darksky.net/forecast/{}/{}'.format(key,self.pws))
+                f = requests.get('https://api.darksky.net/forecast/{}/{},{}'.format(key, lat, long))
                 weather = f.json()
-                tmod.save_json('weather.json',weather,'home')
+                tmod.save_json('weather.json', weather, 'home')
                 self.weather = tmod.open_json('weather.json','home')
                 self.warning = ''
             else:
@@ -51,7 +74,6 @@ class Wu():
     def gleen_info(self):
         # weather service
         self.weather_service = "Provided by:   Dark Sky"  # https://darksky.net/poweredby/
-        
         try:    # left weather info
             # brief description of the weather
             self.status = self.weather['currently']['summary']
@@ -199,16 +221,20 @@ class Wu():
         except:
             icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(self.icon_path)))
         return(icon)
+
+    def write_config(self, file_, dictionary,):
+        tmod.save_json(file_, dictionary)
+        self.read_config('config.json')
         
-    def read_config(self,file_='config.json'):
+    def read_config(self, file_='config.json'):
             config = tmod.open_json(file_)
             config_value = [value for (key,value) in sorted(config.items())]
             # pws icon_path api unit code
             self.api = config_value[0]
-            #self.code = config_value[2]
+            self.code = config_value[2]
             self.icon_path = config_value[5]
             self.pws = config_value[6]
-            self.unit = config_value[8]
+            self.unit = config_value[7]
 
             
             
