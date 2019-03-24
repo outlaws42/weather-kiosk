@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.12'
+    version = '3.0.13'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -128,7 +128,7 @@ class Main(tk.Frame):
         now = datetime.datetime.now()
         today12am = now.replace(hour=0, minute=5, second=0, microsecond=0)
         today1230am = now.replace(hour=0, minute=35, second=0, microsecond=0)
-        today1130pm = now.replace(hour=11, minute=30, second=0, microsecond=0)
+        today1130pm = now.replace(hour=23, minute=30, second=0, microsecond=0)
         if now >= today1130pm and self.run_once == 1:
             conn, cur = dp.create_connection(self.database_path)
             high_low = dp.high_low_temp_today(cur, conn, 'weather')
