@@ -12,22 +12,22 @@ The reason for writing this program was for 2 reasons.
 
 ## Prerequisites
 
-requires: python 3, tkinter 8.6, weather underground api key
+requires: python 3, tkinter 8.6, Dark Sky api key
 
 ### api.py
-You will need to create a file called api.py in the lib dir. You can get a api key from https://www.wunderground.com/weather/api/ 
+You will need to create a file called api.py in the lib dir. You can get a api key from https://darksky.net/dev 
 ```
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-key = 'your_weather_underground_api_key'
+key = 'your_Dark_Sky_api_key'
 
 ```
 
 ### settings Dialog
- The zip code is only used to insert into the
-database. You can find the pws code for your area by going to https://www.wunderground.com/ and then search location 
-by zip code or city.  As of version 3.0.4 settings.py is not used instead there is a settings dialog. 
+You can either type in your address or zip code to get the weather for your area. 
+The broker is for the IP address of the MQTT broker. This is only used for the indoor remote temp sensor. It is not required. If this is not setup the indoor temp will read E1.
+As of version 3.0.4 settings.py is not used instead there is a settings dialog. 
 There is a drop down menu from the current status image(Image located with the outside temp).
 
 
