@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.13'
+    version = '3.0.14'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -144,7 +144,7 @@ class Main(tk.Frame):
 
     def db_config_wether(self):
         table = 'weather'
-        condition = self.outdoor.status
+        condition = self.outdoor.status_icon
         otemp = self.outdoor.outdoor_temp
         windspeed = self.outdoor.wind_speed
         feelslike = self.outdoor.windchill

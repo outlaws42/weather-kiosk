@@ -150,8 +150,9 @@ class Wu():
             self.barometer_dir = "0.0"
             pass
 
-        # Current Icon      
-        self.current_icon = self.icon_select(self.weather['currently']['icon'])
+        # Current Icon 
+        self.status_icon =  self.weather['currently']['icon']    
+        self.current_icon = self.icon_select(self.status_icon)
                 
     def degtocompass(self, degrees):
         direction = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW",
