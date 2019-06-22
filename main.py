@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.14'
+    version = '3.0.15'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -441,7 +441,7 @@ class Main(tk.Frame):
         indoor_label.grid(row='0', column='0', columnspan='2', padx=(50, 50))
 
     def display_outdoor(self):
-        
+        self.past_icon = self.icon_select(self.conp)
         if self.temp_past == 'day':
             past_text = 'Yesterday\'s High/Low: '
         elif self.temp_past == 'month':
@@ -463,6 +463,13 @@ class Main(tk.Frame):
         past_h_info = tk.Label(self.f_top, fg=self.color_2,
                                bg=self.background,font=self.font_hum, text=self.past_temp)
         past_h_info.grid(row='2',column='1', sticky='w', pady=(0, 0), padx=(290, 0))
+        
+        past_h_icon = tk.Label(self.f_top, fg=self.color_2,
+                               bg=self.background,font=self.font_hum, image=self.past_icon)
+        past_h_icon.grid(row='2',column='1', sticky='w', pady=(0, 0), padx=(400, 0))
+        
+        
+        
         if self.outdoor.warning:
             warning_info = tk.Label(self.f_top, fg=self.color_4,
                                     bg=self.background, font=self.font_cat, text=self.outdoor.warning)
@@ -616,7 +623,15 @@ class Main(tk.Frame):
                                 bg=self.background, font=self.font_ws, text=self.weather_service)
         service_text.grid(row='4', column='1', columnspan='3', sticky='w',
                           pady=(0, 5), padx=(0, 5))
-
+    
+    def icon_select(self,icon_code):
+        try:
+            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/30/{}.png'.format(self.icon_path, icon_code)))
+        except:
+            icon = tk.PhotoImage(file=tmod.get_resource_path('{}/30/na.png'.format(self.icon_path)))
+        return(icon)
+    
+    
     def quit_button(self):
         # Quit button settings
 
