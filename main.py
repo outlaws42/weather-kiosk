@@ -45,7 +45,7 @@ logging.basicConfig(filename='weather_kiosk.log', level=logging.INFO,
 
 
 class Main(tk.Frame):
-    version = '3.0.15'
+    version = '3.0.16'
     software = 'Weather Kiosk'
     degree_sign = '\N{DEGREE SIGN}'  # Set Degree special character
     background = "black"
@@ -646,7 +646,7 @@ class Main(tk.Frame):
         for btn in btnList:
             menu.add_command(label=btn,  
                              command= lambda btn = btn: self.menuClicked(btn))
-        quitButton.grid(column='1', row='4', sticky='sw', pady=(0, 5), padx=(130, 0))
+        quitButton.grid(column='1', row='4', sticky='sw', pady=(0, 5), padx=(130, 45))
         
     def menuClicked(self, btn):
         if btn == 'Settings':
