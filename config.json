@@ -1,10 +1,10 @@
 {
-    "api": false,
+    "api": true,
     "broker_add": "192.168.1.26",
     "code": "7866 w lincolnway",
     "forecast_source": 1,
-    "fullscreen": false,
-    "icon_path": "Images/65",
+    "fullscreen": true,
+    "icon_path": "Images",
     "temp_past": "year",
     "unit": "in"
 }

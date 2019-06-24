@@ -152,7 +152,7 @@ class Wu():
 
         # Current Icon 
         self.status_icon =  self.weather['currently']['icon']    
-        self.current_icon = self.icon_select(self.status_icon)
+        self.current_icon = self.icon_select('65', self.status_icon)
                 
     def degtocompass(self, degrees):
         direction = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW",
@@ -205,20 +205,20 @@ class Wu():
         day_code = self.forecast_code()
         # day 0   
         # weather condition icon
-        self.forecast_0_day_icon=self.icon_select(day_code[0])
+        self.forecast_0_day_icon=self.icon_select('65', day_code[0])
 
         # day 1       
         # weather condition icon
-        self.forecast_1_day_icon=self.icon_select(day_code[1])
+        self.forecast_1_day_icon=self.icon_select('65', day_code[1])
        
         # day 2
         # weather condition icon
-        self.forecast_2_day_icon=self.icon_select(day_code[2])
+        self.forecast_2_day_icon=self.icon_select('65', day_code[2])
  
 
-    def icon_select(self,icon_code):
+    def icon_select(self, folder, icon_code):
         try:
-            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}.png'.format(self.icon_path,icon_code)))
+            icon= tk.PhotoImage(file=tmod.get_resource_path('{}/{}/{}.png'.format(self.icon_path,folder,icon_code)))
         except:
             icon = tk.PhotoImage(file=tmod.get_resource_path('{}/na.png'.format(self.icon_path)))
         return(icon)
