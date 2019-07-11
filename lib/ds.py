@@ -28,22 +28,22 @@ class Wu():
             addressout = location.address
             addresslist = addressout.split(',')
             if len(address) <= 5:
-                self.city = addresslist[0]
+                city = addresslist[0]
             else:
-                self.city = addresslist[2]
-            print(self.city)
+                city = addresslist[2]
+            print(city)
             print(addresslist)
             print(addressout)
-            return location.latitude, location.longitude
+            return location.latitude, location.longitude, city
         except Exception as e:
-            print(e)
-            return 41.232921, -85.649106
+            print("This is the location from Error {} ".format(e))
+            return 41.232921, -85.649106, "columbia city"
 
     def get_weather_info(self):
         self.read_config()
         location = self.geolocation(self.code)
-        lat, long = location
-        print(location)
+        lat, long, self.city = location
+        print(" This is the location {}".format(location))
         try:
             if self.api == True:
                 f = requests.get('https://api.darksky.net/forecast/{}/{},{}'.format(key, lat, long))
