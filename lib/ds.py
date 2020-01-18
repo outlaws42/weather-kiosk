@@ -178,8 +178,8 @@ class Wu():
             measure = 'fahrenheit'
         
         for i in range(days):
-            temp = '{}{}/{}{}'.format(round(self.weather['daily']['data'][i]['apparentTemperatureHigh']),
-                                      self.degree_sign, round(self.weather['daily']['data'][i]['apparentTemperatureLow']),
+            temp = '{}{}/{}{}'.format(round(self.weather['daily']['data'][i]['temperatureMax']),
+                                      self.degree_sign, round(self.weather['daily']['data'][i]['temperatureMin']),
                                       self.degree_sign)
             forecast.append(temp)
         return forecast
