@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
+version = '2.0'
+
 import random
 import os
 import os.path
@@ -15,6 +17,7 @@ try:
     import requests
 except:
     pass
+
 # File I/O /////////////////////////////////////////
 def get_resource_path(rel_path):
     dir_of_py_file = os.path.dirname(sys.argv[0])
@@ -48,6 +51,24 @@ def save_file(file_,variable,type_='relative'):
             output.write(variable)
     else:
         with open(get_resource_path(file_), 'w') as output:
+            output.write(variable)
+
+def save_file_list(file_,variable,type_='relative'):
+    home = os.path.expanduser("~")
+    if type_ == 'Home':
+        with open('{}/{}'.format(home,file_), 'w') as output:
+            output.write(''.join(variable))
+    else:
+        with open(get_resource_path(file_), 'w') as output:
+            output.write(''.join(variable))
+
+def save_file_append(file_,variable,type_='relative'):
+    home = os.path.expanduser("~")
+    if type_ == 'Home':
+        with open('{}/{}'.format(home,file_), 'a') as output:
+            output.write(variable)
+    else:
+        with open(get_resource_path(file_), 'a') as output:
             output.write(variable)
 
 def save_pickle(file_,variable,type_='relative'):
